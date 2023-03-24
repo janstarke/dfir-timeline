@@ -1,11 +1,10 @@
 
-mod artifact;
 pub mod artifacts;
 mod action;
 mod timeline_record;
-mod timestamp;
+mod event_data;
+pub (crate) mod ser_tz;
 
 pub use action::*;
-pub use artifact::*;
+pub use event_data::*;
 pub use timeline_record::*;
-pub use timestamp::*;

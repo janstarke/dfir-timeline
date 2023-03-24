@@ -2,7 +2,7 @@ use apache_avro::AvroSchema;
 use bodyfile::Bodyfile3Line;
 use serde::{Serialize, Deserialize};
 
-use crate::Artifact;
+use crate::EventData;
 
 #[derive(Debug, Serialize, Deserialize, AvroSchema)]
 pub struct PosixFile {
@@ -13,7 +13,7 @@ pub struct PosixFile {
     size: i64,
 }
 
-impl Artifact for PosixFile {
+impl EventData for PosixFile {
 
 }
 
