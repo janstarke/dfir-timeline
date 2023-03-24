@@ -1,8 +1,18 @@
 use apache_avro::AvroSchema;
 use bodyfile::Bodyfile3Line;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::EventData;
+use crate::{Event, EventData};
+
+#[derive(Debug, Serialize, Deserialize, AvroSchema)]
+pub enum PosixFileEvent {
+    Modified,
+    Accessed,
+    Changed,
+    Created,
+}
+
+impl Event for PosixFileEvent {}
 
 #[derive(Debug, Serialize, Deserialize, AvroSchema)]
 pub struct PosixFile {
@@ -14,7 +24,7 @@ pub struct PosixFile {
 }
 
 impl EventData for PosixFile {
-
+    type EventType = PosixFileEvent;
 }
 
 impl TryFrom<&Bodyfile3Line> for PosixFile {
@@ -25,7 +35,7 @@ impl TryFrom<&Bodyfile3Line> for PosixFile {
             user_id: i64::try_from(line.get_uid())?,
             group_id: i64::try_from(line.get_gid())?,
             mode: line.get_mode().to_string(),
-            size: i64::try_from(line.get_size())?
+            size: i64::try_from(line.get_size())?,
         })
     }
 }
