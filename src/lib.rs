@@ -1,3 +1,4 @@
+pub const AVRO_NAMESPACE: &str = "dfir_timeline";
 
 pub mod artifacts;
 mod timeline_record;

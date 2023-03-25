@@ -25,9 +25,9 @@ lazy_static! {
     pub static ref TIMELINE_RECORD_POSIXFILE_SCHEMA: Schema = match Schema::parse(&json!({
         "type": "record",
         "name": "TimelineRecord_PosixFile",
-        "namespace": "dfir-timeline",
+        "namespace": crate::AVRO_NAMESPACE,
         "fields" : [
-            {"name": "ts", "type": "long", "order": "asc"},
+            {"name": "ts", "type": "long", "order": "ascending"},
             {"name": "tz", "type": "string"},
             {"name": "ev", "type": <PosixFile as EventData>::EventType::get_schema()},
             {"name": "ed", "type": PosixFile::get_schema()}
