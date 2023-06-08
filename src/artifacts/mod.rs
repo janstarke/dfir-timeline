@@ -1,3 +1,3 @@
-mod posix_file;
+mod posix_file_record;
 
-pub use posix_file::*;
+pub use posix_file_record::*;

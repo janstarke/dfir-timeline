@@ -1,9 +1,6 @@
-pub const AVRO_NAMESPACE: &str = "dfir_timeline";
-
 pub mod artifacts;
-mod timeline_record;
-mod event;
-pub (crate) mod ser_tz;
+mod dfir_record;
+mod serializer;
 
-pub use event::*;
-pub use timeline_record::*;
+pub use dfir_record::*;
+pub use serializer::DfirSerializer as Serializer;
