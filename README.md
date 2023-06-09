@@ -3,7 +3,7 @@ Library for the creation of DFIR timelines
 
 ## Record format
 
-Basically, the Record format uses [MessagePack](https://github.com/msgpack/msgpack), with some extensions:
+Basically, the [record format](https://github.com/fox-it/flow.record) uses [MessagePack](https://github.com/msgpack/msgpack), with some extensions:
 
  - a list of records is preceded by a header
  - every record is preceded by its size (as 32bit integer in network byte order)
