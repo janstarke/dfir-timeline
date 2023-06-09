@@ -22,3 +22,7 @@ The header is formed by the serialized version of the string `RECORDSTREAM\n`, p
 │   A    │   M    │  0x0a  │
 └────────┴────────┴────────┘
 ```
+
+### Descriptor
+
+### Record data
