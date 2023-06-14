@@ -1,8 +1,8 @@
 pub enum RecordPackType {
-    RecordPackExtType = 0xE,
-    RecordPackTypeRecord = 0x1,
-    RecordPackTypeDescriptor = 0x2,
-    RecordPackTypeFieldtype = 0x3,
+    RecordPackExtType = 0x0E,
+    RecordPackTypeRecord = 0x01,
+    RecordPackTypeDescriptor = 0x02,
+    RecordPackTypeFieldtype = 0x03,
     RecordPackTypeDatetime = 0x10,
     RecordPackTypeVarint = 0x11,
     RecordPackTypeGroupedrecord = 0x12,

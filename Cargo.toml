@@ -14,3 +14,5 @@ chrono = {version="0.4", features=["serde"]}
 chrono-tz = "0.8"
 bodyfile = "0.1"
 log = "0.4"
+recorddescriptor_derive = {path="recorddescriptor_derive"}
+record-types = {path="record-types"}

@@ -1,10 +1,11 @@
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Serialize};
+use recorddescriptor_derive::HasRecordDescriptor;
+use record_types::HasRecordDescriptor;
+use record_types::ToFieldDescriptor;
 
-use crate::DfirRecord;
-
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, HasRecordDescriptor)]
 pub struct PosixFileRecord {
     file_name: String,
     user_id: i64,
@@ -16,6 +17,17 @@ pub struct PosixFileRecord {
     changed: Option<DateTime<Utc>>,
     birth: Option<DateTime<Utc>>,
 }
+/*
+lazy_static! {
+    static ref DESCRIPTOR: RecordDescriptor = schema_for!(PosixFileRecord).into();
+}
+
+impl DfirRecord for PosixFileRecord {
+    fn descriptor() -> &'static RecordDescriptor {
+        &DESCRIPTOR
+    }
+}
+ */
 
 struct UnixTimestamp(i64);
 
@@ -53,4 +65,3 @@ impl TryFrom<&Bodyfile3Line> for PosixFileRecord {
     }
 }
 
-impl DfirRecord for PosixFileRecord {}

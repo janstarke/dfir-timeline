@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use serde::Serializer;
+use serde::Serialize;
 
 use crate::DfirRecord;
 
@@ -49,7 +49,7 @@ where
     }
 
     pub fn print_magic(&mut self) -> Result<(), rmp_serde::encode::Error> {
-        self.serializer().serialize_bytes(RECORDSTREAM_MAGIC)?;
+        RECORDSTREAM_MAGIC.serialize(&mut self.serializer())?;
         self.flush_buffer();
 
         Ok(())
