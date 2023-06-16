@@ -4,12 +4,12 @@ use crate::FieldType;
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct RecordField {
-    field_name: String,
+    field_name: &'static str,
     field_type: FieldType,
 }
 
-impl From<(String, FieldType)> for RecordField {
-    fn from(value: (String, FieldType)) -> Self {
+impl From<(&'static str, FieldType)> for RecordField {
+    fn from(value: (&'static str, FieldType)) -> Self {
         Self {
             field_name: value.0,
             field_type: value.1,

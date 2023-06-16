@@ -4,6 +4,8 @@ use serde::{Serialize};
 use recorddescriptor_derive::HasRecordDescriptor;
 use record_types::HasRecordDescriptor;
 use record_types::RecordField;
+use record_types::ToFieldType;
+
 
 #[derive(Debug, Serialize, HasRecordDescriptor)]
 pub struct PosixFileRecord {

@@ -30,7 +30,7 @@ fn struct_descriptor(s: &syn::DataStruct) -> proc_macro2::TokenStream {
                 let field_name = f.ident.as_ref().unwrap().to_string();
                 let field_type = &f.ty;
                 quote_spanned!(f.span()=>
-                    RecordField::from((<#field_name>,
+                    RecordField::from((#field_name,
                     <#field_type>::to_field_type()))
                 )
             });
