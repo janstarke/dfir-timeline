@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::RecordField;
 
-#[derive(Clone, Eq, PartialEq, Debug, Serialize)]
+#[derive(Clone, Eq, PartialEq, Debug, Serialize, Hash)]
 pub struct RecordDescriptor(
     Vec<RecordField>,
 );

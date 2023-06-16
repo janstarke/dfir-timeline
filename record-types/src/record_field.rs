@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::FieldType;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub struct RecordField {
     field_name: &'static str,
     field_type: FieldType,
