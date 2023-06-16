@@ -1,16 +1,15 @@
-use crate::FieldDescriptor;
+use serde::Serialize;
 
-pub enum RecordDescriptor {
-    Unit,
+use crate::RecordField;
 
-    UnnamedFields(Vec<FieldDescriptor>),
+#[derive(Clone, Eq, PartialEq, Debug, Serialize)]
+pub struct RecordDescriptor(
+    Vec<RecordField>,
+);
 
-    NamedFields(Vec<(String, FieldDescriptor)>),
-}
-
-impl FromIterator<FieldDescriptor> for RecordDescriptor {
-    fn from_iter<T: IntoIterator<Item = FieldDescriptor>>(iter: T) -> Self {
+impl FromIterator<RecordField> for RecordDescriptor {
+    fn from_iter<T: IntoIterator<Item = RecordField>>(iter: T) -> Self {
         let v = Vec::from_iter(iter);
-        Self::UnnamedFields(v)
+        Self(v)
     }
 }

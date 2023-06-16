@@ -27,26 +27,18 @@ fn struct_descriptor(s: &syn::DataStruct) -> proc_macro2::TokenStream {
     match &s.fields {
         syn::Fields::Named(n) => {
             let recurse = n.named.iter().map(|f| {
-                let name = &f.ty;
+                let field_name = f.ident.as_ref().unwrap().to_string();
+                let field_type = &f.ty;
                 quote_spanned!(f.span()=>
-                    <#name>::to_field_descriptor()
+                    RecordField::from((<#field_name>,
+                    <#field_type>::to_field_type()))
                 )
             });
             quote! {
                 vec![ #(#recurse , )* ]
             }
         }
-        syn::Fields::Unnamed(u) => {
-            let recurse = u.unnamed.iter().map(|f| {
-                let name = &f.ty;
-                quote_spanned!(f.span()=>
-                    <#name>::to_field_descriptor()
-                )
-            });
-            quote! {
-                vec![ #(#recurse , )* ]
-            }
-        }
-        syn::Fields::Unit => quote!(record_types::RecordDescriptor::Unit),
+        syn::Fields::Unnamed(_) => unimplemented!(),
+        syn::Fields::Unit => unimplemented!(),
     }
 }

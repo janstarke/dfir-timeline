@@ -3,7 +3,7 @@ use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Serialize};
 use recorddescriptor_derive::HasRecordDescriptor;
 use record_types::HasRecordDescriptor;
-use record_types::ToFieldDescriptor;
+use record_types::RecordField;
 
 #[derive(Debug, Serialize, HasRecordDescriptor)]
 pub struct PosixFileRecord {
@@ -17,17 +17,6 @@ pub struct PosixFileRecord {
     changed: Option<DateTime<Utc>>,
     birth: Option<DateTime<Utc>>,
 }
-/*
-lazy_static! {
-    static ref DESCRIPTOR: RecordDescriptor = schema_for!(PosixFileRecord).into();
-}
-
-impl DfirRecord for PosixFileRecord {
-    fn descriptor() -> &'static RecordDescriptor {
-        &DESCRIPTOR
-    }
-}
- */
 
 struct UnixTimestamp(i64);
 

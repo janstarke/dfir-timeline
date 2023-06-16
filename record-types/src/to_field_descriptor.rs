@@ -1,31 +1,31 @@
-use crate::FieldDescriptor;
+use crate::FieldType;
 use chrono::{DateTime, Utc};
 
 
-pub trait ToFieldDescriptor {
-    fn to_field_descriptor() -> FieldDescriptor;
+pub trait ToFieldType {
+    fn to_field_type() -> FieldType;
 }
 
-impl ToFieldDescriptor for u32 {
-    fn to_field_descriptor() -> FieldDescriptor {
-        FieldDescriptor::Int
+impl ToFieldType for u32 {
+    fn to_field_type() -> FieldType {
+        FieldType::Int
     }
 }
 
-impl ToFieldDescriptor for i64 {
-    fn to_field_descriptor() -> FieldDescriptor {
-        FieldDescriptor::Int
+impl ToFieldType for i64 {
+    fn to_field_type() -> FieldType {
+        FieldType::Int
     }
 }
 
-impl ToFieldDescriptor for String {
-    fn to_field_descriptor() -> FieldDescriptor{
-        FieldDescriptor::String
+impl ToFieldType for String {
+    fn to_field_type() -> FieldType{
+        FieldType::String
     }
 }
 
-impl ToFieldDescriptor for Option<DateTime<Utc>> {
-    fn to_field_descriptor() -> FieldDescriptor{
-        FieldDescriptor::Timestamp
+impl ToFieldType for Option<DateTime<Utc>> {
+    fn to_field_type() -> FieldType{
+        FieldType::Timestamp
     }
 }
