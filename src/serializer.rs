@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::{io::Write, collections::HashSet};
 
 use serde::Serialize;
 
@@ -10,6 +10,7 @@ pub struct DfirSerializer<W: Write> {
     ser: rmp_serde::Serializer<W>,
     has_header_written: bool,
     buffer: Vec<u8>,
+    written_descriptor_hashes: HashSet<u64>,
 }
 
 impl<W> DfirSerializer<W>
@@ -21,6 +22,7 @@ where
             ser: rmp_serde::Serializer::new(writer),
             has_header_written: false,
             buffer: Vec::new(),
+            written_descriptor_hashes: HashSet::new()
         }
     }
 
@@ -29,6 +31,8 @@ where
             self.print_magic()?;
             self.has_header_written = true;
         }
+
+        let descriptor = R::descriptor();
 
         record.serialize(&mut self.serializer())?;
 

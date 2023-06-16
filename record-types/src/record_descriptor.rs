@@ -7,9 +7,8 @@ pub struct RecordDescriptor(
     Vec<RecordField>,
 );
 
-impl FromIterator<RecordField> for RecordDescriptor {
-    fn from_iter<T: IntoIterator<Item = RecordField>>(iter: T) -> Self {
-        let v = Vec::from_iter(iter);
-        Self(v)
+impl RecordDescriptor {
+    pub const fn from(fields: Vec<RecordField>) -> Self {
+        Self(fields)
     }
 }

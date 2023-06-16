@@ -1,5 +1,5 @@
 use crate::RecordDescriptor;
 
 pub trait HasRecordDescriptor {
-    fn descriptor() -> RecordDescriptor;
+    fn descriptor() -> &'static RecordDescriptor;
 }

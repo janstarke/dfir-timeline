@@ -2,9 +2,7 @@ use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Serialize};
 use recorddescriptor_derive::HasRecordDescriptor;
-use record_types::HasRecordDescriptor;
-use record_types::RecordField;
-use record_types::ToFieldType;
+use record_types::{HasRecordDescriptor, RecordField, FieldType};
 
 
 #[derive(Debug, Serialize, HasRecordDescriptor)]

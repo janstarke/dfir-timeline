@@ -8,8 +8,8 @@ pub struct RecordField {
     field_type: FieldType,
 }
 
-impl From<(&'static str, FieldType)> for RecordField {
-    fn from(value: (&'static str, FieldType)) -> Self {
+impl RecordField {
+    pub const fn from(value: (&'static str, FieldType)) -> Self {
         Self {
             field_name: value.0,
             field_type: value.1,

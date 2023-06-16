@@ -1,6 +1,17 @@
 use proc_macro::TokenStream;
 use quote::{quote, quote_spanned};
-use syn::spanned::Spanned;
+use syn::{spanned::Spanned, Type};
+
+fn to_field_type(ty: &Type) -> proc_macro2::TokenStream {
+    let type_name = quote!(#ty).to_string().replace(" ", "");
+    match &type_name[..] {
+        "String" => quote!(FieldType::String),
+        "i64" => quote!(FieldType::Int),
+        "u32" => quote!(FieldType::Int),
+        "Option<DateTime<Utc>>" => quote!(FieldType::Timestamp),
+        _ => unimplemented!()
+    }
+}
 
 #[proc_macro_derive(HasRecordDescriptor)]
 pub fn recorddescriptor_derive(input: TokenStream) -> TokenStream {
@@ -15,8 +26,9 @@ pub fn recorddescriptor_derive(input: TokenStream) -> TokenStream {
 
     let gen = quote!(
         impl HasRecordDescriptor for #name {
-            fn descriptor() -> record_types::RecordDescriptor {
-                record_types::RecordDescriptor::from_iter(#descriptor.into_iter())
+            fn descriptor() -> &'static record_types::RecordDescriptor {
+                static d: record_types::RecordDescriptor = record_types::RecordDescriptor::from(#descriptor);
+                &d
             }
         }
     );
@@ -28,10 +40,9 @@ fn struct_descriptor(s: &syn::DataStruct) -> proc_macro2::TokenStream {
         syn::Fields::Named(n) => {
             let recurse = n.named.iter().map(|f| {
                 let field_name = f.ident.as_ref().unwrap().to_string();
-                let field_type = &f.ty;
+                let field_type = to_field_type(&f.ty);
                 quote_spanned!(f.span()=>
-                    RecordField::from((#field_name,
-                    <#field_type>::to_field_type()))
+                    RecordField::from((#field_name, #field_type))
                 )
             });
             quote! {
@@ -42,3 +53,4 @@ fn struct_descriptor(s: &syn::DataStruct) -> proc_macro2::TokenStream {
         syn::Fields::Unit => unimplemented!(),
     }
 }
+
