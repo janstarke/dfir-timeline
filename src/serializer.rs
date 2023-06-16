@@ -1,4 +1,4 @@
-use std::{io::Write, collections::HashSet};
+use std::{io::Write, collections::HashSet, hash::Hash};
 
 use serde::Serialize;
 
@@ -32,7 +32,13 @@ where
             self.has_header_written = true;
         }
 
-        let descriptor = R::descriptor();
+        let descriptor_hash = R::descriptor_hash();
+        if ! self.written_descriptor_hashes.contains(&descriptor_hash) {
+            self.buffer.extend(R::descriptor());
+            self.flush_buffer();
+
+            self.written_descriptor_hashes.insert(descriptor_hash);
+        }
 
         record.serialize(&mut self.serializer())?;
 

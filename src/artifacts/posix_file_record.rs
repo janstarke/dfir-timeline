@@ -1,11 +1,10 @@
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Serialize};
-use recorddescriptor_derive::HasRecordDescriptor;
-use record_types::{HasRecordDescriptor, RecordField, FieldType};
+use crate::HasRecordDescriptor;
 
 
-#[derive(Debug, Serialize, HasRecordDescriptor)]
+#[derive(Debug, Serialize, recorddescriptor_derive::HasRecordDescriptor)]
 pub struct PosixFileRecord {
     file_name: String,
     user_id: i64,
