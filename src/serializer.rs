@@ -1,4 +1,4 @@
-use std::{io::Write, collections::HashSet, hash::Hash};
+use std::{io::Write, collections::HashSet};
 
 use serde::Serialize;
 
