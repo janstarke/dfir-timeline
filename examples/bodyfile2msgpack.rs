@@ -8,5 +8,5 @@ fn main() {
     let bf_line = Bodyfile3Line::try_from(sample_line).unwrap();
     let record = PosixFileRecord::try_from(&bf_line).unwrap();
     let mut ser = Serializer::new(stdout());
-    //ser.serialize(&record).unwrap();
+    ser.serialize(&record).unwrap();
 }

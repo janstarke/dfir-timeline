@@ -1,5 +1,4 @@
-use serde::{Serialize};
 use super::HasRecordDescriptor;
+use serde::Serialize;
 
-pub trait DfirRecord: Serialize + HasRecordDescriptor {
-}
+pub trait DfirRecord: Serialize + HasRecordDescriptor {}

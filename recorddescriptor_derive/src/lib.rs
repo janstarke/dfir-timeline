@@ -11,6 +11,7 @@ use syn::Type;
 mod field_type;
 mod record_descriptor;
 mod record_field;
+mod record;
 
 use field_type::*;
 use record_descriptor::*;
@@ -27,7 +28,7 @@ fn to_field_type(ty: &Type) -> FieldType {
     }
 }
 
-#[proc_macro_derive(HasRecordDescriptor)]
+#[proc_macro_derive(Record)]
 pub fn recorddescriptor_derive(input: TokenStream) -> TokenStream {
     let ast: syn::DeriveInput = syn::parse(input).unwrap();
     let name = &ast.ident;
@@ -52,6 +53,10 @@ pub fn recorddescriptor_derive(input: TokenStream) -> TokenStream {
             fn descriptor_hash() -> u64 {
                 #hash
             }
+        }
+
+        impl DfirRecord for #name {
+
         }
     );
     gen.into()
