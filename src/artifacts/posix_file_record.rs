@@ -1,8 +1,7 @@
-use bodyfile::Bodyfile3Line;
-use chrono::{DateTime, NaiveDateTime, Utc};
-use serde::{Serialize};
 use crate::HasRecordDescriptor;
-
+use bodyfile::Bodyfile3Line;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
 
 #[derive(Debug, Serialize, recorddescriptor_derive::HasRecordDescriptor)]
 pub struct PosixFileRecord {
@@ -27,12 +26,7 @@ impl From<i64> for UnixTimestamp {
 
 impl From<UnixTimestamp> for Option<DateTime<Utc>> {
     fn from(value: UnixTimestamp) -> Self {
-        if value.0.is_negative() {
-            None
-        } else {
-            NaiveDateTime::from_timestamp_opt(value.0, 0)
-                .map(|ndt| DateTime::<Utc>::from_utc(ndt, Utc))
-        }
+        DateTime::from_timestamp(value.0, 0)
     }
 }
 
@@ -52,4 +46,3 @@ impl TryFrom<&Bodyfile3Line> for PosixFileRecord {
         })
     }
 }
-
