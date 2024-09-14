@@ -1,7 +1,4 @@
-use std::{
-    collections::HashSet,
-    io::{Cursor, Write},
-};
+use std::{collections::HashSet, io::Write};
 
 use serde::Serialize;
 

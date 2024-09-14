@@ -5,7 +5,6 @@ use std::{
 
 use proc_macro::TokenStream;
 use quote::quote;
-use serde::Serialize;
 use syn::Type;
 
 mod field_type;

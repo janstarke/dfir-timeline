@@ -2,6 +2,7 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 #[repr(i8)]
+#[allow(unused)]
 pub enum ExtType {
     RecordPackExtType = 0xE,
 
