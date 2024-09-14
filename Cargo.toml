@@ -14,5 +14,5 @@ chrono = {version="0.4", features=["serde"]}
 chrono-tz = "0.10"
 bodyfile = "0.1"
 log = "0.4"
-recorddescriptor_derive = {path="recorddescriptor_derive"}
+flow-record-derive = {path="flow-record-derive"}
 once_cell = "1.18"

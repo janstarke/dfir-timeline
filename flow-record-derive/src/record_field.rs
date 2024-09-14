@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{ser::SerializeTuple, Serialize};
 
 use crate::FieldType;
 
@@ -22,7 +22,9 @@ impl Serialize for RecordField {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&self.field_name)
-        //self.serialize(&self.field_type)
+        let mut tuple = serializer.serialize_tuple(2)?;
+        tuple.serialize_element(&self.field_name)?;
+        tuple.serialize_element(&self.field_type)?;
+        tuple.end()
     }
 }
