@@ -13,7 +13,11 @@ Basically, the [record format](https://github.com/fox-it/flow.record) uses [Mess
 The header is formed by the serialized version of the string `RECORDSTREAM\n`, preceded by the header size:
 
 ```
- 63                                 31               15                0
+       length of the string "RECORDSTREAM\n" ----+
+                                                 |
+                  msgpack type bin8 ----+        |
+                                        |        |
+0                                   31  v        v                     63
 ┌───────────────────────────────────┬────────┬────────┬────────┬────────┐
 │   0x0000000f (header size in BE)  │  0xc4  │  0x0d  │   R    │   E    │
 ├────────┬────────┬────────┬────────┼────────┼────────┼────────┼────────┤

@@ -1,4 +1,7 @@
-use std::{io::Write, collections::HashSet};
+use std::{
+    collections::HashSet,
+    io::{Cursor, Write},
+};
 
 use serde::Serialize;
 
@@ -22,18 +25,21 @@ where
             ser: rmp_serde::Serializer::new(writer),
             has_header_written: false,
             buffer: Vec::new(),
-            written_descriptor_hashes: HashSet::new()
+            written_descriptor_hashes: HashSet::new(),
         }
     }
 
-    pub fn serialize<R>(&mut self, record: &R) -> Result<(), rmp_serde::encode::Error> where R: DfirRecord {
-        if ! self.has_header_written {
+    pub fn serialize<R>(&mut self, record: &R) -> Result<(), rmp_serde::encode::Error>
+    where
+        R: DfirRecord,
+    {
+        if !self.has_header_written {
             self.print_magic()?;
             self.has_header_written = true;
         }
 
         let descriptor_hash = R::descriptor_hash();
-        if ! self.written_descriptor_hashes.contains(&descriptor_hash) {
+        if !self.written_descriptor_hashes.contains(&descriptor_hash) {
             self.buffer.extend(R::descriptor());
             self.flush_buffer();
 
@@ -59,7 +65,17 @@ where
     }
 
     pub fn print_magic(&mut self) -> Result<(), rmp_serde::encode::Error> {
-        RECORDSTREAM_MAGIC.serialize(&mut self.serializer())?;
+        let mut ser = rmp_serde::Serializer::new(Cursor::new(Vec::new()))
+            .with_bytes(rmp_serde::config::BytesMode::ForceAll);
+        RECORDSTREAM_MAGIC.serialize(&mut ser)?;
+        let magic = ser.into_inner().into_inner();
+        let header_len: u32 = magic.len().try_into().unwrap();
+
+        self.ser
+            .get_mut()
+            .write_all(&header_len.to_be_bytes())
+            .unwrap();
+        self.ser.get_mut().write_all(&magic).unwrap();
         self.flush_buffer();
 
         Ok(())
