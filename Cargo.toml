@@ -2,6 +2,11 @@
 name = "flow-record"
 version = "0.1.0"
 edition = "2021"
+description = "library to create records to be used by the rdump cli utility"
+repository = "https://github.com/janstarke/flow-record"
+authors = ["Jan Starke <jan.starke@posteo.de>"]
+license = "GPL-3.0"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
