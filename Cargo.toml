@@ -17,4 +17,4 @@ serde = {version="1.0", features = ["derive"]}
 chrono = {version="0.4", features=["serde"]}
 bodyfile = "0.1"
 flow-record-derive = {path="flow-record-derive"}
-flow-record-common = {path="flow-record-common"}
+flow-record-common = "0.1.0"

@@ -18,5 +18,5 @@ proc-macro2 = "1"
 serde = {version="1.0", features = ["derive"]}
 rmp = "0.8"
 rmp-serde = {version="1.1"}
-flow-record-common = {path="../flow-record-common"}
+flow-record-common = "0.1.0"
 sha2 = "0.10.8"
