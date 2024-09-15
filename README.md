@@ -1,5 +1,5 @@
-# dfir-timeline
-Library for the creation of DFIR timelines
+# flow-record
+Library for the creation of DFIR timelines, to be used by [`rdump`](https://docs.dissect.tools/en/latest/tools/rdump.html)
 
 ## Record format
 
