@@ -2,23 +2,12 @@ use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
+use flow_record_common::{ExtData, FieldType, Object, RecordDescriptor, RecordField};
 use serde::Serialize;
 
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::Type;
-
-mod ext_data;
-mod field_type;
-mod object;
-mod record_descriptor;
-mod record_field;
-
-use field_type::*;
-use object::*;
-use record_descriptor::*;
-use record_field::*;
-use ext_data::*;
 
 fn to_field_type(ty: &Type) -> FieldType {
     let type_name = quote!(#ty).to_string().replace(' ', "");
