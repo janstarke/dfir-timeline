@@ -2,7 +2,7 @@ use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
-use flow_record_common::{ExtData, FieldType, Object, RecordDescriptor, RecordField};
+use flow_record_common::{Object, FieldType, RecordDescriptor, RecordField};
 use serde::Serialize;
 
 use proc_macro::TokenStream;
@@ -66,7 +66,7 @@ fn struct_descriptor(name: String, s: &syn::DataStruct) -> Vec<u8> {
                 .collect();
             let mut buffer: Vec<u8> = Vec::new();
             let mut ser = rmp_serde::Serializer::new(&mut buffer);
-            ExtData(Object::Descriptor(RecordDescriptor::new(name, fields)))
+            Object::with_descriptor(&RecordDescriptor::new(name, fields))
             .serialize(&mut ser)
             .unwrap();
             buffer

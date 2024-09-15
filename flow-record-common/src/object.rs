@@ -1,41 +1,25 @@
-use serde::{ser::SerializeTuple, Serialize};
+use rmp_serde::Serializer;
+use serde::{Deserialize, Serialize};
+use serde_bytes::ByteBuf;
 
-use crate::RecordDescriptor;
+use crate::{ObjectType, Record, RecordDescriptor};
 
-#[derive(Serialize, Clone, Copy)]
-#[repr(i8)]
-#[allow(unused)]
-pub enum ObjectType {
-    RecordTypeExt = 0x0e,
-
-    RecordPackTypeRecord = 0x1,
-    RecordPackTypeDescriptor = 0x2,
-    RecordPackTypeFieldtype = 0x3,
-    RecordPackTypeDatetime = 0x10,
-    RecordPackTypeVarint = 0x11,
-    RecordPackTypeGroupedrecord = 0x12,
-}
-
-#[allow(unused)]
-pub enum Object {
-    Record,
-    Descriptor(RecordDescriptor),
-    Fieldtype,
-    Datetime,
-    Varint,
-    GroupedRecord,
-}
+pub struct Object(ByteBuf);
 
 impl Object {
-    pub fn type_id(&self) -> ObjectType {
-        match self {
-            Object::Record => ObjectType::RecordPackTypeRecord,
-            Object::Descriptor(_) => ObjectType::RecordPackTypeDescriptor,
-            Object::Fieldtype => ObjectType::RecordPackTypeFieldtype,
-            Object::Datetime => ObjectType::RecordPackTypeDatetime,
-            Object::Varint => ObjectType::RecordPackTypeVarint,
-            Object::GroupedRecord => ObjectType::RecordPackTypeGroupedrecord,
-        }
+    fn serializer() -> Serializer<Vec<u8>> {
+        rmp_serde::Serializer::new(Vec::new()).with_bytes(rmp_serde::config::BytesMode::ForceAll)
+    }
+    pub fn with_descriptor(descriptor: &RecordDescriptor) -> Self {
+        let mut ser = Self::serializer();
+        ObjectType::RecordPackTypeDescriptor.serialize(&mut ser, descriptor).unwrap();
+        Self(ByteBuf::from(ser.into_inner()))
+    }
+
+    pub fn with_record<R>(record: &R) -> Self where R: Record {
+        let mut ser = Self::serializer();
+        ObjectType::RecordPackTypeRecord.serialize(&mut ser, record).unwrap();
+        Self(ByteBuf::from(ser.into_inner()))
     }
 }
 
@@ -44,16 +28,10 @@ impl Serialize for Object {
     where
         S: serde::Serializer,
     {
-        let mut tuple = serializer.serialize_tuple(2)?;
-        tuple.serialize_element(&(self.type_id() as i8))?;
-        match self {
-            Object::Record => todo!(),
-            Object::Descriptor(d) => tuple.serialize_element(d)?,
-            Object::Fieldtype => todo!(),
-            Object::Datetime => todo!(),
-            Object::Varint => todo!(),
-            Object::GroupedRecord => todo!(),
-        }
-        tuple.end()
+        SerializableExtType((ObjectType::RecordTypeExt as i8, self.0.clone())).serialize(serializer)
     }
 }
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename = "_ExtStruct")]
+struct SerializableExtType((i8, serde_bytes::ByteBuf));
