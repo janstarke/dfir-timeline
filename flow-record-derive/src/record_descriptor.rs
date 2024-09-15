@@ -1,38 +1,28 @@
-use std::io::Write;
+use serde::{ser::SerializeTuple, Deserialize, Serialize};
 
-use rmp_serde::Serializer;
-use serde::{Deserialize, Serialize};
-use serde_bytes::ByteBuf;
+use crate::RecordField;
 
-use crate::{ext_type::ExtType, RecordField};
-
-#[derive(Clone, Eq, PartialEq, Debug, Serialize, Hash)]
-pub struct RecordDescriptor{
-    name: String, 
-    fields: Vec<RecordField>
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+pub struct RecordDescriptor {
+    name: String,
+    fields: Vec<RecordField>,
 }
 
 impl RecordDescriptor {
     pub const fn new(name: String, fields: Vec<RecordField>) -> Self {
-        Self{name, fields}
+        Self { name, fields }
     }
+}
 
-    fn to_ext_type(&self) -> DescriptorExtType {
-        let mut buffer: Vec<u8> = Vec::new();
-        let mut ser = rmp_serde::Serializer::new(&mut buffer);
-        self.name.serialize(&mut ser).unwrap();
-        self.fields.serialize(&mut ser).unwrap();
-        DescriptorExtType((
-            ExtType::RecordPackTypeDescriptor as i8,
-            ByteBuf::from(buffer),
-        ))
-    }
-
-    pub fn serialize<W>(&self, ser: &mut Serializer<W>) -> Result<(), rmp_serde::encode::Error>
+impl Serialize for RecordDescriptor {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        W: Write,
+        S: serde::Serializer,
     {
-        self.to_ext_type().serialize(ser)
+        let mut tuple = serializer.serialize_tuple(2)?;
+        tuple.serialize_element(&self.name)?;
+        tuple.serialize_element(&self.fields)?;
+        tuple.end()
     }
 }
 

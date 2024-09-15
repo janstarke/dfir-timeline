@@ -2,28 +2,34 @@ use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
+use serde::Serialize;
 
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::Type;
 
+mod ext_data;
 mod field_type;
+mod object;
 mod record_descriptor;
 mod record_field;
-mod ext_type;
 
 use field_type::*;
+use object::*;
 use record_descriptor::*;
 use record_field::*;
+use ext_data::*;
 
 fn to_field_type(ty: &Type) -> FieldType {
     let type_name = quote!(#ty).to_string().replace(' ', "");
     match &type_name[..] {
         "String" => FieldType::String,
-        "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64" => FieldType::Int,
-        "DateTime<Utc>" => FieldType::Timestamp,
-        "Option<DateTime<Utc>>" => FieldType::Timestamp,
-        _ => unimplemented!(),
+        "u8" | "u16" => FieldType::UInt16,
+        "u32" => FieldType::UInt32,
+        "i64" => FieldType::VarInt,
+        "DateTime<Utc>" => FieldType::Datetime,
+        "Option<DateTime<Utc>>" => FieldType::Datetime,
+        type_id => unimplemented!("no implementation for type '{type_id}' yet"),
     }
 }
 
@@ -71,7 +77,9 @@ fn struct_descriptor(name: String, s: &syn::DataStruct) -> Vec<u8> {
                 .collect();
             let mut buffer: Vec<u8> = Vec::new();
             let mut ser = rmp_serde::Serializer::new(&mut buffer);
-            RecordDescriptor::new(name, fields).serialize(&mut ser).unwrap();
+            ExtData(Object::Descriptor(RecordDescriptor::new(name, fields)))
+            .serialize(&mut ser)
+            .unwrap();
             buffer
         }
         syn::Fields::Unnamed(_) => unimplemented!(),

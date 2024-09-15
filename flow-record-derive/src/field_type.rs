@@ -4,11 +4,13 @@ use serde::Serialize;
 #[allow(dead_code)]
 pub enum FieldType {
     Bool,
-    Int,
+    UInt16,
+    UInt32,
+    VarInt,
     Float,
     String,
     Bin,
-    Timestamp
+    Datetime
 }
 
 impl Serialize for FieldType {
@@ -16,12 +18,14 @@ impl Serialize for FieldType {
     where
         S: serde::Serializer {
         let s = match self {
-            FieldType::Bool => "bool",
-            FieldType::Int => "int",
+            FieldType::Bool => "boolean",
+            FieldType::UInt16 => "uint16",
+            FieldType::UInt32 => "uint32",
+            FieldType::VarInt => "varint",
             FieldType::Float => "float",
             FieldType::String => "string",
             FieldType::Bin => "bin",
-            FieldType::Timestamp => "timestamp",
+            FieldType::Datetime => "datetime",
         };
         serializer.serialize_str(s)
     }

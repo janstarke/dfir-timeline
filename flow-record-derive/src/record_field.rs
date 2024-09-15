@@ -23,8 +23,10 @@ impl Serialize for RecordField {
         S: serde::Serializer,
     {
         let mut tuple = serializer.serialize_tuple(2)?;
-        tuple.serialize_element(&self.field_name)?;
+
+        // keep in mind: the order is important here
         tuple.serialize_element(&self.field_type)?;
+        tuple.serialize_element(&self.field_name)?;
         tuple.end()
     }
 }
