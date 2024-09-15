@@ -16,5 +16,5 @@ rmp-serde = "1.3.0"
 serde = {version="1.0", features = ["derive"]}
 chrono = {version="0.4", features=["serde"]}
 bodyfile = "0.1"
-flow-record-derive = {path="flow-record-derive"}
+flow-record-derive = "0.1.0"
 flow-record-common = "0.1.0"
