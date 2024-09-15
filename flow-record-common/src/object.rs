@@ -18,7 +18,15 @@ impl Object {
 
     pub fn with_record<R>(record: &R) -> Self where R: Record {
         let mut ser = Self::serializer();
-        ObjectType::RecordPackTypeRecord.serialize(&mut ser, record).unwrap();
+        let metadata = (
+            R::name(),
+            R::descriptor_hash(),
+        );
+        let ser_data = (
+            metadata,
+            record
+        );
+        ObjectType::RecordPackTypeRecord.serialize(&mut ser, &ser_data).unwrap();
         Self(ByteBuf::from(ser.into_inner()))
     }
 }

@@ -1,8 +1,10 @@
+use getset::Getters;
 use serde::{ser::SerializeTuple, Serialize};
 
 use crate::FieldType;
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Getters)]
+#[getset(get="pub")]
 pub struct RecordField {
     field_name: String,
     field_type: FieldType,

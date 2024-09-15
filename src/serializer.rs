@@ -1,5 +1,6 @@
 use std::{collections::HashSet, io::Write};
 
+use flow_record_common::Object;
 use serde::Serialize;
 
 use crate::Record;
@@ -10,7 +11,7 @@ pub struct DfirSerializer<W: Write> {
     writer: W,
     has_header_written: bool,
     buffer: Vec<u8>,
-    written_descriptor_hashes: HashSet<u64>,
+    written_descriptor_hashes: HashSet<u32>,
 }
 
 impl<W> DfirSerializer<W>
@@ -48,7 +49,7 @@ where
             self.written_descriptor_hashes.insert(descriptor_hash);
         }
 
-        record.serialize(&mut self.serializer())?;
+        Object::with_record(record).serialize(&mut self.serializer())?;
 
         self.flush_buffer();
 

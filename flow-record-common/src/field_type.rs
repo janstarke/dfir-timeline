@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::Serialize;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -13,11 +15,9 @@ pub enum FieldType {
     Datetime
 }
 
-impl Serialize for FieldType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer {
-        let s = match self {
+impl Display for FieldType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
             FieldType::Bool => "boolean",
             FieldType::UInt16 => "uint16",
             FieldType::UInt32 => "uint32",
@@ -26,7 +26,14 @@ impl Serialize for FieldType {
             FieldType::String => "string",
             FieldType::Bin => "bin",
             FieldType::Datetime => "datetime",
-        };
-        serializer.serialize_str(s)
+        })
+    }
+}
+
+impl Serialize for FieldType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer {
+        serializer.serialize_str(&self.to_string())
     }
 }
