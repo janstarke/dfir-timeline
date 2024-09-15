@@ -91,21 +91,21 @@ The object itself will be the msgpack encoded equivalent of the following data:
 
 It is important to note that every field is encoded as a tuple where the first entry is the datatype, and the second is the field name. The following datatypes are supported:
 
-|Datatype | Explanation |
-|-|-|
-|`boolean`|
+| Datatype | Mapped from Rust type | Explanation |
+|-|-|-|
+|`boolean`| `bool`
 |`command`|
 |`dynamic`|
-|`datetime`|
+|`datetime`| `DateTime<Utc>`
 |`filesize`|
-|`uint16`|
-|`uint32`|
+|`uint16`| `u8`, `u16`
+|`uint32`|`u32`
 |`float`|
-|`string`|
+|`string`|`String`
 |`stringlist`|
 |`dictlist`|
 |`unix_file_mode`|
-|`varint`|
+|`varint`| `i64` 
 |`wstring`|
 |`net.ipv4.Address`|
 |`net.ipv4.Subnet`|
