@@ -27,6 +27,10 @@ where
         }
     }
 
+    pub fn into_inner(self) -> W {
+        self.writer
+    }
+
     pub fn without_header(mut self) -> Self {
         self.has_header_written = true;
         self
