@@ -1,13 +1,19 @@
 use getset::Getters;
-use serde::{ser::SerializeTuple, Serialize};
+use rmpv::Value;
 
 use crate::FieldType;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Getters)]
-#[getset(get="pub")]
+#[getset(get = "pub")]
 pub struct RecordField {
     field_name: String,
     field_type: FieldType,
+}
+
+impl RecordField {
+    pub fn dissolve(self) -> (String, FieldType) {
+        (self.field_name, self.field_type)
+    }
 }
 
 impl From<(String, FieldType)> for RecordField {
@@ -19,16 +25,11 @@ impl From<(String, FieldType)> for RecordField {
     }
 }
 
-impl Serialize for RecordField {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut tuple = serializer.serialize_tuple(2)?;
-
-        // keep in mind: the order is important here
-        tuple.serialize_element(&self.field_type)?;
-        tuple.serialize_element(&self.field_name)?;
-        tuple.end()
+impl From<RecordField> for Value {
+    fn from(value: RecordField) -> Self {
+        Value::Array(vec![
+            Value::String(value.field_name.into()),
+            value.field_type.into(),
+        ])
     }
 }

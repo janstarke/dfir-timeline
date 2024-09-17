@@ -1,16 +1,16 @@
-use std::{collections::HashSet, io::Write};
+use std::{collections::HashSet, io::{Read, Write}};
 
+use binrw::{io::NoSeek, BinWrite};
 use flow_record_common::Object;
-use serde::Serialize;
+use rmpv::Value;
 
-use crate::Record;
+use crate::{FlowRecord, Record};
 
 const RECORDSTREAM_MAGIC: &[u8] = b"RECORDSTREAM\n";
 
 pub struct DfirSerializer<W: Write> {
-    writer: W,
+    writer: NoSeek<W>,
     has_header_written: bool,
-    buffer: Vec<u8>,
     written_descriptor_hashes: HashSet<u32>,
 }
 
@@ -19,16 +19,16 @@ where
     W: Write,
 {
     pub fn new(writer: W) -> Self {
+        let writer = NoSeek::new(writer);
         Self {
             writer,
             has_header_written: false,
-            buffer: Vec::new(),
             written_descriptor_hashes: HashSet::new(),
         }
     }
 
     pub fn into_inner(self) -> W {
-        self.writer
+        self.writer.into_inner()
     }
 
     pub fn without_header(mut self) -> Self {
@@ -36,45 +36,28 @@ where
         self
     }
 
-    pub fn serialize<R>(&mut self, record: &R) -> Result<(), rmp_serde::encode::Error>
+    pub fn serialize<R>(&mut self, record: R) -> Result<(), rmp_serde::encode::Error>
     where
         R: Record,
     {
         if !self.has_header_written {
-            self.print_magic()?;
+            FlowRecord::from(Value::Binary(RECORDSTREAM_MAGIC.to_vec()))
+                .write_be(&mut self.writer)
+                .unwrap();
             self.has_header_written = true;
         }
 
         let descriptor_hash = R::descriptor_hash();
         if !self.written_descriptor_hashes.contains(&descriptor_hash) {
-            self.buffer.extend(R::descriptor());
-            self.flush_buffer();
-
+            FlowRecord::from(R::descriptor().clone())
+                .write_be(&mut self.writer)
+                .unwrap();
             self.written_descriptor_hashes.insert(descriptor_hash);
         }
+        FlowRecord::from(Value::try_from(Object::with_record(record))?)
+            .write_be(&mut self.writer)
+            .unwrap();
 
-        Object::with_record(record).serialize(&mut self.serializer())?;
-
-        self.flush_buffer();
-
-        Ok(())
-    }
-
-    fn serializer(&mut self) -> rmp_serde::Serializer<&mut Vec<u8>> {
-        rmp_serde::Serializer::new(&mut self.buffer)
-            .with_bytes(rmp_serde::config::BytesMode::ForceAll)
-    }
-
-    fn flush_buffer(&mut self) {
-        let size = (self.buffer.len() as u32).to_be_bytes();
-        self.writer.write_all(&size).unwrap();
-        self.writer.write_all(&self.buffer).unwrap();
-        self.buffer.clear();
-    }
-
-    pub fn print_magic(&mut self) -> Result<(), rmp_serde::encode::Error> {
-        RECORDSTREAM_MAGIC.serialize(&mut self.serializer())?;
-        self.flush_buffer();
         Ok(())
     }
 }

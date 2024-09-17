@@ -1,6 +1,6 @@
-use serde::{ser::SerializeTuple, Serialize};
+use rmpv::Value;
 
-#[derive(Serialize, Clone, Copy)]
+#[derive(Clone, Copy)]
 #[repr(i8)]
 #[allow(unused)]
 pub enum ObjectType {
@@ -14,15 +14,8 @@ pub enum ObjectType {
     RecordPackTypeGroupedrecord = 0x12,
 }
 
-impl ObjectType {
-    pub fn serialize<D, S>(&self, serializer: S, data: &D) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-        D: Serialize
-    {
-        let mut tuple = serializer.serialize_tuple(2)?;
-        tuple.serialize_element(&(*self as i8))?;
-        tuple.serialize_element(data)?;
-        tuple.end()
+impl From<ObjectType> for Value {
+    fn from(value: ObjectType) -> Self {
+        Value::Integer((value as i8).into())
     }
 }

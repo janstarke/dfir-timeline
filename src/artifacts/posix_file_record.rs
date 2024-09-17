@@ -1,16 +1,16 @@
+use crate::Record;
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, Utc};
 use flow_record_derive::Record;
-use crate::Record;
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, Record)]
+#[derive(Debug, Record)]
 pub struct PosixFileRecord {
     file_name: String,
     user_id: i64,
     group_id: i64,
     mode: String,
     size: i64,
+
     modified: Option<DateTime<Utc>>,
     accessed: Option<DateTime<Utc>>,
     changed: Option<DateTime<Utc>>,

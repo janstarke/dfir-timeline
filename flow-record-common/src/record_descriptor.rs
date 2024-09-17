@@ -1,4 +1,4 @@
-use serde::{ser::SerializeTuple, Deserialize, Serialize};
+use rmpv::Value;
 
 use crate::RecordField;
 
@@ -14,18 +14,11 @@ impl RecordDescriptor {
     }
 }
 
-impl Serialize for RecordDescriptor {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut tuple = serializer.serialize_tuple(2)?;
-        tuple.serialize_element(&self.name)?;
-        tuple.serialize_element(&self.fields)?;
-        tuple.end()
+impl From<RecordDescriptor> for Value {
+    fn from(value: RecordDescriptor) -> Self {
+        Value::Array(vec![
+            Value::String(value.name.into()),
+            Value::Array(value.fields.into_iter().map(Value::from).collect()),
+        ])
     }
 }
-
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-#[serde(rename = "_ExtStruct")]
-struct DescriptorExtType((i8, serde_bytes::ByteBuf));

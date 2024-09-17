@@ -1,6 +1,8 @@
 use std::fmt::Display;
 
-use serde::Serialize;
+use proc_macro2::TokenStream;
+use quote::{quote, ToTokens, TokenStreamExt};
+use rmpv::Value;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 #[allow(dead_code)]
@@ -12,28 +14,46 @@ pub enum FieldType {
     Float,
     String,
     Bin,
-    Datetime
+    Datetime,
 }
 
 impl Display for FieldType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            FieldType::Bool => "boolean",
-            FieldType::UInt16 => "uint16",
-            FieldType::UInt32 => "uint32",
-            FieldType::VarInt => "varint",
-            FieldType::Float => "float",
-            FieldType::String => "string",
-            FieldType::Bin => "bin",
-            FieldType::Datetime => "datetime",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                FieldType::Bool => "boolean",
+                FieldType::UInt16 => "uint16",
+                FieldType::UInt32 => "uint32",
+                FieldType::VarInt => "varint",
+                FieldType::Float => "float",
+                FieldType::String => "string",
+                FieldType::Bin => "bin",
+                FieldType::Datetime => "datetime",
+            }
+        )
     }
 }
 
-impl Serialize for FieldType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer {
-        serializer.serialize_str(&self.to_string())
+impl From<FieldType> for Value {
+    fn from(value: FieldType) -> Self {
+        Value::String(value.to_string().into())
+    }
+}
+
+impl ToTokens for FieldType {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let token = match self {
+            FieldType::Bool => quote! {FieldType::Bool},
+            FieldType::UInt16 => quote! {FieldType::UInt16},
+            FieldType::UInt32 => quote! {FieldType::UInt32},
+            FieldType::VarInt => quote! {FieldType::VarInt},
+            FieldType::Float => quote! {FieldType::Float},
+            FieldType::String => quote! {FieldType::String},
+            FieldType::Bin => quote! {FieldType::Bin},
+            FieldType::Datetime => quote! {FieldType::Datetime},
+        };
+        tokens.append_all(quote! {flow_record_common::#token});
     }
 }
