@@ -6,7 +6,7 @@ use rmpv::Value;
 
 use crate::{FlowRecord, Record};
 
-const RECORDSTREAM_MAGIC: &[u8] = b"RECORDSTREAM\n";
+pub const RECORDSTREAM_MAGIC: &[u8] = b"RECORDSTREAM\n";
 
 pub struct DfirSerializer<W: Write> {
     writer: NoSeek<W>,

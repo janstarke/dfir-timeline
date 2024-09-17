@@ -2,9 +2,11 @@
 //! # Usage
 //! 
 //! ```rust
+//! use binrw::BinReaderExt;
 //! use chrono::prelude::*;
-//! use flow_record::{Record, Serializer};
+//! use flow_record::{FlowRecord, Object, Record, Serializer, RECORDSTREAM_MAGIC};
 //! use flow_record_derive::Record;
+//! use std::io::{Cursor,Seek,SeekFrom};
 //! 
 //! #[derive(Record)]
 //! struct SampleStruct {
@@ -22,7 +24,16 @@
 //! let mut ser = Serializer::new(Vec::new());
 //! ser.serialize(sample_struct).unwrap();
 //! 
-//! let result = ser.into_inner();
+//! let mut raw_data = Cursor::new(ser.into_inner());
+//! 
+//! // omit the header
+//! raw_data.seek(SeekFrom::Start((4+2+RECORDSTREAM_MAGIC.len()).try_into().unwrap()));
+//! 
+//! let descriptor_record: FlowRecord = raw_data.read_be().unwrap();
+//! let data_record: FlowRecord = raw_data.read_be().unwrap();
+//! 
+//! let descriptor = Object::try_from(Value::from(descriptor_record)).unwrap();
+//! let data = Object::try_from(Value::from(data_record)).unwrap();
 //! ```
 pub mod artifacts;
 mod serializer;
@@ -34,3 +45,4 @@ pub use serializer::DfirSerializer as Serializer;
 
 pub use flow_record_common::*;
 pub use flow_record::*;
+pub use serializer::RECORDSTREAM_MAGIC;

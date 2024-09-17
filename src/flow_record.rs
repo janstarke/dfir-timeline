@@ -56,3 +56,9 @@ impl From<Value> for FlowRecord {
         Self(data)
     }
 }
+
+impl From<FlowRecord> for Value {
+    fn from(value: FlowRecord) -> Self {
+        value.0
+    }
+}
