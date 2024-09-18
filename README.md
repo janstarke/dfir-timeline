@@ -69,7 +69,25 @@ In the following description I omit the fact that every distinct record and ever
 
 ### Objects
 
-All data in the record format are specified as an *object*, which is simply a tuple (a *fixarray* of length 2) consisting of an object type and the object data. The following object ids are known:
+All data in the record format are specified as an *object*, which is simply a tuple (a *fixarray* of length 2) consisting of an object type and the object data.
+
+```
+   ┌──────────────────────────── msgpack type ext8/ext16/ext32
+   │    ┌─────────────────────── length of content            
+   │    │    ┌────────────────── type id must be 0x0e         
+   │    │    │     ┌──────────── array of length 2            
+   │    │    │     │    ┌─────── record pack type             
+   ▼    ▼    ▼     │    │    ┌── payload                      
+┌────┬────┬────┬───┼────┼────┼──────────────────────────      
+│    │    │    │   ▼    ▼    ▼                                
+│    │    │    │┌────┬────┬──────────────────                 
+│0xc7│    │0x0e││0x92│    │                                   
+│    │    │    │└────┴────┴──────────────────                 
+│    │    │    │                                              
+└────┴────┴────┴────────────────────────────────────────      
+```
+
+The following object ids (aka record pack types) are known:
 
 |Object ID|Raw value|Description|
 |-|-|-|
