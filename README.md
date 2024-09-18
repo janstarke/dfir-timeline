@@ -7,6 +7,8 @@
 # flow-record
 Library for the creation of DFIR timelines, to be used by [`rdump`](https://docs.dissect.tools/en/latest/tools/rdump.html)
 
+
+
 ## Usage
 
 ```rust
@@ -67,9 +69,9 @@ The header is formed by the serialized version of the string `RECORDSTREAM\n`, e
 
 In the following description I omit the fact that every distinct record and every descriptor must be preceded by its length.
 
-### Objects
+### Record packs
 
-All data in the record format are specified as an *object*, which is simply a tuple (a *fixarray* of length 2) consisting of an object type and the object data.
+All data in the record format are specified as a *record pack*, which is simply a tuple (a *fixarray* of length 2) consisting of an record pack type and the record pack data.
 
 ```
    ┌──────────────────────────── msgpack type ext8/ext16/ext32
@@ -77,7 +79,7 @@ All data in the record format are specified as an *object*, which is simply a tu
    │    │    ┌────────────────── type id must be 0x0e         
    │    │    │     ┌──────────── array of length 2            
    │    │    │     │    ┌─────── record pack type             
-   ▼    ▼    ▼     │    │    ┌── payload                      
+   ▼    ▼    ▼     │    │    ┌── record pack data                      
 ┌────┬────┬────┬───┼────┼────┼──────────────────────────      
 │    │    │    │   ▼    ▼    ▼                                
 │    │    │    │┌────┬────┬──────────────────                 
@@ -87,7 +89,7 @@ All data in the record format are specified as an *object*, which is simply a tu
 └────┴────┴────┴────────────────────────────────────────      
 ```
 
-The following object ids (aka record pack types) are known:
+The following record pack types are known:
 
 |Object ID|Raw value|Description|
 |-|-|-|
@@ -100,7 +102,7 @@ The following object ids (aka record pack types) are known:
 
 ### Descriptor
 
-Every record must have some certain type, which must be specified using a *record descriptor* first. A record descriptor is an [object](#objects) of type `RecordPackTypeDescriptor`, which is wrapped as an msgpack `ext8` (depending on its size). The msgpack type id is `0x0e`.
+Every record must have some certain type, which must be specified using a *record descriptor* first. A record descriptor is a [record pack](#record-pack) of type `RecordPackTypeDescriptor`, which is wrapped as an msgpack `ext8` (depending on its size). The msgpack type id is `0x0e`.
 
 Consider the following type:
 
@@ -120,7 +122,7 @@ which will the following msgpack encoding:
 | `0x43` | length of the containing data |
 | `0x0e` | marker for `rdump` that this contains an [object](#objects)
 
-The object itself will be the msgpack encoded equivalent of the following data:
+The record pack itself will be the msgpack encoded equivalent of the following data:
 
 ```json
 [
