@@ -42,7 +42,7 @@ Basically, the [record format](https://github.com/fox-it/flow.record) uses [Mess
  - every record is preceded by its size (as 32bit integer in network byte order)
 
 ```text
-                                ─────────[record size] bytes──────── 
+                                ┌────────[record size] bytes───────┐ 
                                /                                    \
 ┌──────────────────────────────┬────────────────────────────────────┐
 │record size (32bit big endian)│     msgpack encoded content        │
