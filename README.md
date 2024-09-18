@@ -69,12 +69,11 @@ assert_eq!(data,
 ```
 
 
-## Record format
+# Record flow format
 
-Basically, the [record format](https://github.com/fox-it/flow.record) uses [MessagePack](https://github.com/msgpack/msgpack), with some extensions:
+Basically, the [record format](https://github.com/fox-it/flow.record) uses [MsgPack](https://github.com/msgpack/msgpack). A record stream is a sequence of tuples, each containing of a 4 byte size field and a msgpack encoded [record pack](#record-packs) (see below).
 
- - a list of records is preceded by a header
- - every record is preceded by its size (as 32bit integer in network byte order)
+The very first of those tuples is a special case; it is some kind of a header.
 
 ```text
                                 ┌────────[record size] bytes───────┐ 
@@ -102,7 +101,7 @@ The header is formed by the serialized version of the string `RECORDSTREAM\n`, e
 
 In the following description I omit the fact that every distinct record and every descriptor must be preceded by its length.
 
-### Record packs
+# Record packs
 
 All data in the record format are specified as a *record pack*, which is simply a tuple (a *fixarray* of length 2) consisting of an record pack type and the record pack data.
 
@@ -133,9 +132,9 @@ The following record pack types are known:
 |RecordPackTypeVarint | `0x11` | |
 |RecordPackTypeGroupedrecord | `0x12` | |
 
-### Descriptor
+## Descriptor
 
-Every record must have some certain type, which must be specified using a *record descriptor* first. A record descriptor is a [record pack](#record-pack) of type `RecordPackTypeDescriptor`, which is wrapped as an msgpack `ext8` (depending on its size). The msgpack type id is `0x0e`.
+Every record must have some certain type, which must be specified using a *record descriptor* first. A record descriptor is a [record pack](#record-packs) of type `RecordPackTypeDescriptor`, which is wrapped as an msgpack `ext8` (depending on its size). The msgpack type id is `0x0e`.
 
 Consider the following type:
 
@@ -187,7 +186,7 @@ It is important to note that every field is encoded as a tuple where the first e
 |`boolean`| `bool`
 |`command`|
 |`dynamic`|
-|`datetime`| `DateTime<Utc>`
+|`datetime`| `DateTime<TZ: TimeZone>` | UNIX timestamp, encoding as integer in msgpack|
 |`filesize`|
 |`uint16`| `u8`, `u16`
 |`uint32`|`u32`
@@ -212,9 +211,36 @@ It is important to note that every field is encoded as a tuple where the first e
 |`net.IPNetwork`|
 |`path`|
 
+### Identifier
 
-### Record data# flow-record
+A record descriptor is identified by
 
+- the name of the record type
+- a hash, which equals the first 32 bit of a SHA256-Hash of the record type name and the names and types (in that order) of the record fields. For example, the above struct would have the following input for the hash function:
+  `test_csv_test1field11stringfield12stringfield13string`, which would result in the hash `12a9d8d90aa34e5068dbf6692b82baf6fff0143eeaa84d7b2a9c92021f7747c2`. Here we take the first 4 bytes `12a9d8d9`, interpret them as byte endian integer `313120985` and use this as hash.
 
+Every remaining record can refer to a record descriptor using the name and hash of it.
 
+## Record data
+
+A record contains a reference to the record descriptor and a list of values, in the order of fields like specified in the descriptor.
+
+```
+        ┌───────────────────────────────────────────────────────────── record pack type 1           
+        │                     ┌─────────────────────────────────────── name of the descriptor       
+        │                     │                   ┌─────────────────── hash of the descriptor       
+        │                     │                   │       ┌─────────── array of values              
+        ▼                     │                   │       │   ┌─────── value of the first data field
+┌────┬────┬───────────────────┼───────────────────┼───────┼───┼───────────────────────────          
+│    │    │                   │                   │       │   │                                     
+│    │    │┌────┬─────────────┼───────────────────┼───┬───┼───┼───────────────────────────          
+│    │    ││    │             ▼                   ▼   │   ▼   ▼                                     
+│    │    ││    │┌────┬────┬─────────────┬────┬──────┐│┌────┬─────────┬─────────┬─────────          
+│0x92│0x01││0x92││0x92│0xa?│<struct name>│0xce│<hash>│││0x9?│<field 1>│<field 2>│...                
+│    │    ││    │└────┴────┴─────────────┴────┴──────┘│└────┴─────────┴─────────┴─────────          
+│    │    ││    │                                     │                                             
+│    │    │└────┴─────────────────────────────────────┴───────────────────────────────────          
+│    │    │                                                                                         
+└────┴────┴───────────────────────────────────────────────────────────────────────────────          
+```
 License: GPL-3.0
