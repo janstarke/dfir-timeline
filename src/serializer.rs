@@ -1,7 +1,7 @@
-use std::{collections::HashSet, io::{Read, Write}};
+use std::{collections::HashSet, io::Write};
 
 use binrw::{io::NoSeek, BinWrite};
-use flow_record_common::Object;
+use flow_record_common::RecordPack;
 use rmpv::Value;
 
 use crate::{FlowRecord, Record};
@@ -54,7 +54,7 @@ where
                 .unwrap();
             self.written_descriptor_hashes.insert(descriptor_hash);
         }
-        FlowRecord::from(Value::try_from(Object::with_record(record))?)
+        FlowRecord::from(Value::try_from(RecordPack::with_record(record))?)
             .write_be(&mut self.writer)
             .unwrap();
 

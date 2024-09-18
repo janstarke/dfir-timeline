@@ -1,4 +1,4 @@
-mod object;
+mod record_pack;
 mod field_type;
 mod object_type;
 mod record_descriptor;
@@ -6,7 +6,7 @@ mod record_field;
 mod record;
 mod error;
 
-pub use object::*;
+pub use record_pack::*;
 pub use field_type::*;
 pub use object_type::*;
 pub use record_descriptor::*;

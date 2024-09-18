@@ -4,9 +4,9 @@ use rmpv::Value;
 
 use crate::{Error, ObjectType, Record, RecordDescriptor};
 
-pub struct Object(Value);
+pub struct RecordPack(Value);
 
-impl Object {
+impl RecordPack {
     pub fn with_descriptor(descriptor: RecordDescriptor) -> Self {
         Self(Value::Array(vec![
             ObjectType::RecordPackTypeDescriptor.into(),
@@ -35,10 +35,10 @@ impl Object {
     }
 }
 
-impl TryFrom<Object> for Value {
+impl TryFrom<RecordPack> for Value {
     type Error = rmpv::encode::Error;
 
-    fn try_from(value: Object) -> Result<Self, Self::Error> {
+    fn try_from(value: RecordPack) -> Result<Self, Self::Error> {
         let mut buffer = Vec::new();
         rmpv::encode::write_value(&mut buffer, &value.0)?;
 
@@ -46,7 +46,7 @@ impl TryFrom<Object> for Value {
     }
 }
 
-impl TryFrom<Value> for Object {
+impl TryFrom<Value> for RecordPack {
     type Error = crate::Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
