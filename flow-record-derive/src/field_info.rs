@@ -3,16 +3,13 @@ use syn::Type;
 
 pub struct FieldInfo {
     pub ft: FieldType,
-    pub is_nullable: bool,
 }
 
 impl From<&Type> for FieldInfo {
     fn from(ty: &Type) -> Self {
         let mut ty = ty;
-        let mut is_nullable = false;
         if let Some(inner) = extract_type_from_option(ty) {
             ty = inner;
-            is_nullable = true;
         }
 
         if let Type::Path(type_path) = ty {
@@ -30,7 +27,6 @@ impl From<&Type> for FieldInfo {
                         _ => unimplemented!("no implementation for type '{type_name:?}' yet"),
                     };
                     return Self {
-                        is_nullable,
                         ft
                     }
                 }

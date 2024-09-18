@@ -1,4 +1,4 @@
-use flow_record_common::{FieldType, RecordField};
+use flow_record_common::RecordField;
 use proc_macro2::TokenStream;
 use quote::quote;
 use sha2::{Digest, Sha256};
@@ -44,13 +44,7 @@ pub fn expand_derive_serialize(ast: &mut syn::DeriveInput) -> syn::Result<TokenS
             }
             fn into_value(self) -> Value {
                 Value::Array(vec![
-                    Value::Array(vec![
-                        Value::String(Self::name().into()),
-                        Value::Integer(Self::descriptor_hash().into()),
-                    ]),
-                    Value::Array(vec![
-                        #(#values),*
-                    ])
+                    #(#values),*
                 ])
             }
         }
@@ -95,37 +89,12 @@ fn record_value_tokens(
     s: &syn::DataStruct,
     from_parameter_name: proc_macro2::TokenStream,
 ) -> impl Iterator<Item = proc_macro2::TokenStream> + '_ {
-    fn value_expr(expr: proc_macro2::TokenStream, ft: FieldType) -> proc_macro2::TokenStream {
-        match ft {
-            flow_record_common::FieldType::Datetime => quote! {#expr.timestamp().into()},
-            _ => quote!{#expr.into()}
-        }
-    }
-
-    record_fields(s).map(move |(ident, _, info)| {
-        let dst_type = match info.ft {
-            flow_record_common::FieldType::Bool => quote! {rmpv::Value::Boolean},
-            flow_record_common::FieldType::UInt16 => quote! {rmpv::Value::Integer},
-            flow_record_common::FieldType::UInt32 => quote! {rmpv::Value::Integer},
-            flow_record_common::FieldType::VarInt => quote! {rmpv::Value::Integer},
-            flow_record_common::FieldType::Float => quote! {rmpv::Value::F64},
-            flow_record_common::FieldType::String => quote! {rmpv::Value::String},
-            flow_record_common::FieldType::Bin => quote! {rmpv::Value::Binary},
-            flow_record_common::FieldType::Datetime => quote! {rmpv::Value::Integer},
-        };
-
-        if info.is_nullable {
-            let var_name = quote! {val};
-            let expr = value_expr(var_name.clone(), info.ft);
-            quote! {
-                match #from_parameter_name.#ident {
-                    None => Value::Nil,
-                    Some(#var_name) => #dst_type(#expr)
-                }
+    record_fields(s).map(move |(ident, _, _info)| {
+        quote! {
+            {
+                use flow_record_common::ToMsgPackValue;
+                #from_parameter_name.#ident.to_msgpack_value()
             }
-        } else {
-            let expr = value_expr(quote! {#from_parameter_name.#ident}, info.ft);
-            quote! {#dst_type(#expr)}
         }
     })
 }

@@ -27,7 +27,11 @@ impl From<i64> for UnixTimestamp {
 
 impl From<UnixTimestamp> for Option<DateTime<Utc>> {
     fn from(value: UnixTimestamp) -> Self {
-        DateTime::from_timestamp(value.0, 0)
+        if value.0 != -1 {
+            DateTime::from_timestamp(value.0, 0)
+        } else {
+            None
+        }
     }
 }
 
