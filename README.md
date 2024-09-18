@@ -1,4 +1,4 @@
-<img width="100%" src="https://raw.githubusercontent.com/janstarke/flow-record/main/docs/img/flow-record-header.png"></img>
+<img width="100%" src="https://raw.githubusercontent.com/janstarke/flow-record/main/docs/img/flow-record-header.png"></img> 
 
 [![Crates.io](https://img.shields.io/crates/v/flow-record)](https://crates.io/crates/flow-record)
 ![Crates.io](https://img.shields.io/crates/l/flow-record)
@@ -41,23 +41,28 @@ Basically, the [record format](https://github.com/fox-it/flow.record) uses [Mess
  - a list of records is preceded by a header
  - every record is preceded by its size (as 32bit integer in network byte order)
 
-### Header
-
-The header is formed by the serialized version of the string `RECORDSTREAM\n`, preceded by the header size:
-
+```text
+                                ─────────[record size] bytes──────── 
+                               /                                    \
+┌──────────────────────────────┬────────────────────────────────────┐
+│record size (32bit big endian)│     msgpack encoded content        │
+└──────────────────────────────┴────────────────────────────────────┘
 ```
-       length of the string "RECORDSTREAM\n" ----+
-                                                 |
-                  msgpack type bin8 ----+        |
-                                        |        |
-0                                   31  v        v                     63
-┌───────────────────────────────────┬────────┬────────┬────────┬────────┐
-│   0x0000000f (header size in BE)  │  0xc4  │  0x0d  │   R    │   E    │
-├────────┬────────┬────────┬────────┼────────┼────────┼────────┼────────┤
-│   C    │   O    │   R    │   D    │   S    │   T    │   R    │   E    │
-├────────┼────────┼────────┼────────┴────────┴────────┴────────┴────────┘
-│   A    │   M    │  0x0a  │
-└────────┴────────┴────────┘
+
+# Header
+
+The header is formed by the serialized version of the string `RECORDSTREAM\n`, encoded as `bin8`:
+
+```text
+   ┌───────────────msgpack type: bin8
+   │                                 
+   │    ┌──────────length: 13 bytes  
+   │    │                            
+   │    │    ┌─────13 bytes of data  
+   ▼    ▼    ▼                       
+┌────┬────┬──────────────┐           
+│0xc4│0x0d│RECORDSTREAM\n│           
+└────┴────┴──────────────┘           
 ```
 
 In the following description I omit the fact that every distinct record and every descriptor must be preceded by its length.
