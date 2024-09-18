@@ -28,8 +28,8 @@ impl From<(String, FieldType)> for RecordField {
 impl From<RecordField> for Value {
     fn from(value: RecordField) -> Self {
         Value::Array(vec![
-            Value::String(value.field_name.into()),
             value.field_type.into(),
+            Value::String(value.field_name.into()),
         ])
     }
 }

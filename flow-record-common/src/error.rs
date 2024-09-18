@@ -12,5 +12,8 @@ pub enum Error {
     Decode(#[from] rmpv::decode::Error),
 
     #[error(transparent)]
-    Encode(#[from] rmpv::encode::Error)
+    Encode(#[from] rmpv::encode::Error),
+
+    #[error(transparent)]
+    BinRW(#[from] binrw::Error)
 }

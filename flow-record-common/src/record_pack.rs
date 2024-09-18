@@ -2,15 +2,15 @@ use std::io::Cursor;
 
 use rmpv::Value;
 
-use crate::{Error, ObjectType, Record, RecordDescriptor};
+use crate::{Error, ObjectType, Record};
 
 pub struct RecordPack(Value);
 
 impl RecordPack {
-    pub fn with_descriptor(descriptor: RecordDescriptor) -> Self {
+    pub fn with_descriptor(descriptor: Value) -> Self {
         Self(Value::Array(vec![
             ObjectType::RecordPackTypeDescriptor.into(),
-            descriptor.into()
+            descriptor
         ]))
     }
 

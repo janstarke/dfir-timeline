@@ -1,7 +1,7 @@
 use std::{collections::HashSet, io::Write};
 
-use binrw::{io::NoSeek, BinWrite};
-use flow_record_common::RecordPack;
+use binrw::{io::NoSeek, BinResult, BinWrite};
+use flow_record_common::{Error, RecordPack};
 use rmpv::Value;
 
 use crate::{FlowRecord, Record};
@@ -36,28 +36,44 @@ where
         self
     }
 
-    pub fn serialize<R>(&mut self, record: R) -> Result<(), rmp_serde::encode::Error>
+    pub fn serialize<R>(&mut self, record: R) -> Result<(), Error>
     where
         R: Record,
     {
         if !self.has_header_written {
-            FlowRecord::from(Value::Binary(RECORDSTREAM_MAGIC.to_vec()))
-                .write_be(&mut self.writer)
-                .unwrap();
-            self.has_header_written = true;
+            self.write_header()?;
         }
 
-        let descriptor_hash = R::descriptor_hash();
-        if !self.written_descriptor_hashes.contains(&descriptor_hash) {
-            FlowRecord::from(R::descriptor().clone())
-                .write_be(&mut self.writer)
-                .unwrap();
-            self.written_descriptor_hashes.insert(descriptor_hash);
+        if !self
+            .written_descriptor_hashes
+            .contains(&R::descriptor_hash())
+        {
+            self.write_descriptor::<R>()?;
         }
-        FlowRecord::from(Value::try_from(RecordPack::with_record(record))?)
-            .write_be(&mut self.writer)
-            .unwrap();
+
+        self.write_flow_record(Value::try_from(RecordPack::with_record(record))?.into())?;
 
         Ok(())
+    }
+
+    fn write_descriptor<R>(&mut self) -> Result<(), Error>
+    where
+        R: Record,
+    {
+        self.write_flow_record(
+            Value::try_from(RecordPack::with_descriptor(R::descriptor().clone()))?.into(),
+        )?;
+        self.written_descriptor_hashes.insert(R::descriptor_hash());
+        Ok(())
+    }
+
+    fn write_header(&mut self) -> Result<(), Error> {
+        self.write_flow_record(Value::Binary(RECORDSTREAM_MAGIC.to_vec()).into())?;
+        self.has_header_written = true;
+        Ok(())
+    }
+
+    fn write_flow_record(&mut self, fr: FlowRecord) -> BinResult<()> {
+        fr.write_be(&mut self.writer)
     }
 }
