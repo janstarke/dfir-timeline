@@ -1,3 +1,9 @@
+<img width="100%" src="https://raw.githubusercontent.com/janstarke/flow-record/main/docs/img/flow-record-header.png"></img>
+
+[![Crates.io](https://img.shields.io/crates/v/flow-record)](https://crates.io/crates/flow-record)
+![Crates.io](https://img.shields.io/crates/l/flow-record)
+![Crates.io (latest)](https://img.shields.io/crates/dv/flow-record)
+
 # flow-record
 Library for the creation of DFIR timelines, to be used by [`rdump`](https://docs.dissect.tools/en/latest/tools/rdump.html)
 
