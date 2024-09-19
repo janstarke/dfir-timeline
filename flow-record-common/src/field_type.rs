@@ -17,6 +17,7 @@ pub enum FieldType {
     Datetime,
     Filesize,
     Path,
+    UnixFileMode
 }
 
 impl Display for FieldType {
@@ -35,6 +36,7 @@ impl Display for FieldType {
                 FieldType::Datetime => "datetime",
                 FieldType::Filesize => "filesize",
                 FieldType::Path => "path",
+                FieldType::UnixFileMode => "unix_file_mode",
             }
         )
     }
@@ -59,6 +61,7 @@ impl ToTokens for FieldType {
             FieldType::Datetime => quote! {FieldType::Datetime},
             FieldType::Filesize => quote! {FieldType::Filesize},
             FieldType::Path => quote! {FieldType::Path},
+            FieldType::UnixFileMode => quote! {FieldType::UnixFileMode},
         };
         tokens.append_all(quote! {flow_record_common::#token});
     }

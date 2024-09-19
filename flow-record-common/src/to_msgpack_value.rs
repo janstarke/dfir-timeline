@@ -60,11 +60,11 @@ impl ToMsgPackValue for Vec<u8> {
     }
 }
 
-macro_rules! to_msgpack_value_for_integer {
-    ($type: ty, $field_type: expr) => {
+macro_rules! to_msgpack_value_for {
+    ($dst: expr, $type: ty, $field_type: expr) => {
         impl ToMsgPackValue for $type {
             fn to_msgpack_value(self) -> rmpv::Value {
-                rmpv::Value::Integer(self.into())
+                $dst(self.into())
             }
 
             fn field_type() -> FieldType {
@@ -73,7 +73,7 @@ macro_rules! to_msgpack_value_for_integer {
         }
         impl ToMsgPackValue for &$type {
             fn to_msgpack_value(self) -> rmpv::Value {
-                rmpv::Value::Integer((*self).into())
+                $dst((*self).into())
             }
 
             fn field_type() -> FieldType {
@@ -81,6 +81,10 @@ macro_rules! to_msgpack_value_for_integer {
             }
         }
     };
+}
+
+macro_rules! to_msgpack_value_for_integer {
+    ($type: ty, $field_type: expr) => {to_msgpack_value_for!(rmpv::Value::Integer, $type, $field_type);}
 }
 
 to_msgpack_value_for_integer!(u8, FieldType::UInt16);
@@ -92,3 +96,6 @@ to_msgpack_value_for_integer!(i8, FieldType::VarInt);
 to_msgpack_value_for_integer!(i16, FieldType::VarInt);
 to_msgpack_value_for_integer!(i32, FieldType::VarInt);
 to_msgpack_value_for_integer!(i64, FieldType::VarInt);
+
+to_msgpack_value_for!(rmpv::Value::F32, f32, FieldType::Float);
+to_msgpack_value_for!(rmpv::Value::F64, f64, FieldType::Float);

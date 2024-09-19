@@ -187,15 +187,15 @@ It is important to note that every field is encoded as a tuple where the first e
 |`command`|
 |`dynamic`|
 |`datetime`| `DateTime<TZ: TimeZone>` | UNIX timestamp, encoding as integer in msgpack|
-|`filesize`|
+|`filesize`|`flow-record-common::Filesize`|
 |`uint16`| `u8`, `u16`
-|`uint32`|`u32`
-|`float`|
+|`uint32`| `u32`, `u64`|
+|`float`|`f32`, `f64`|
 |`string`|`String`
 |`stringlist`|
 |`dictlist`|
-|`unix_file_mode`|
-|`varint`| `i64` 
+|`unix_file_mode`| `String` |
+|`varint`| `i8`,`i16`, `i32`, `i64` |
 |`wstring`|
 |`net.ipv4.Address`|
 |`net.ipv4.Subnet`|
@@ -203,13 +203,13 @@ It is important to note that every field is encoded as a tuple where the first e
 |`net.udp.Port`|
 |`uri`|
 |`digest`|
-|`bytes`|
+|`bytes`|`Vec<u8>`|
 |`record`|
 |`net.ipaddress`|
 |`net.ipnetwork`|
 |`net.IPAddress`|
 |`net.IPNetwork`|
-|`path`|
+|`path`|`PathBuf`|
 
 ### Identifier
 
