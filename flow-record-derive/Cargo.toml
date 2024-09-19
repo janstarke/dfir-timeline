@@ -1,6 +1,6 @@
 [package]
 name = "flow-record-derive"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "library to create records to be used by the rdump cli utility"
 repository = "https://github.com/janstarke/flow-record"
@@ -18,5 +18,5 @@ proc-macro2 = "1"
 serde = {version="1.0", features = ["derive"]}
 rmp = "0.8"
 rmp-serde = {version="1.1"}
-#flow-record-common = "0.2.0"
-flow-record-common = {path="../flow-record-common"}
+flow-record-common = "0.3.0"
+#flow-record-common = {path="../flow-record-common"}

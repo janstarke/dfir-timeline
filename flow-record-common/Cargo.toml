@@ -1,6 +1,6 @@
 [package]
 name = "flow-record-common"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "library to create records to be used by the rdump cli utility"
 repository = "https://github.com/janstarke/flow-record"
