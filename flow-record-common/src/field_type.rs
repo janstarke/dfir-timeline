@@ -15,6 +15,7 @@ pub enum FieldType {
     String,
     Bin,
     Datetime,
+    Filesize,
 }
 
 impl Display for FieldType {
@@ -31,6 +32,7 @@ impl Display for FieldType {
                 FieldType::String => "string",
                 FieldType::Bin => "bin",
                 FieldType::Datetime => "datetime",
+                FieldType::Filesize => "filesize"
             }
         )
     }
@@ -53,6 +55,7 @@ impl ToTokens for FieldType {
             FieldType::String => quote! {FieldType::String},
             FieldType::Bin => quote! {FieldType::Bin},
             FieldType::Datetime => quote! {FieldType::Datetime},
+            FieldType::Filesize => quote! {FieldType::Filesize}
         };
         tokens.append_all(quote! {flow_record_common::#token});
     }

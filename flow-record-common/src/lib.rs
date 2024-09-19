@@ -6,6 +6,7 @@ mod record_field;
 mod record;
 mod error;
 mod to_msgpack_value;
+pub mod types;
 
 pub use record_pack::*;
 pub use field_type::*;
