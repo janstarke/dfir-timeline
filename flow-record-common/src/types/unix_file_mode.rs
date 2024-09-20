@@ -1,23 +1,31 @@
+use file_mode::{Mode, ModeParseError};
+
 use crate::ToMsgPackValue;
 
 #[derive(Debug)]
-pub struct UnixFileMode(String);
+pub struct UnixFileMode(Mode);
 
-impl From<String> for UnixFileMode {
-    fn from(value: String) -> Self {
-        Self(value)
-    }
-}
+impl TryFrom<&str> for UnixFileMode {
+    type Error = ModeParseError;
+    
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut mode = Mode::empty();
+        let mut value = value;
 
-impl From<UnixFileMode> for String {
-    fn from(value: UnixFileMode) -> Self {
-        value.0
+        if value.chars().nth(1) == Some('/') {
+            value = &value[3..];
+        }
+
+        let value = format!("={value}");
+
+        mode.set_str(&value)?;
+        Ok(Self(mode))
     }
 }
 
 impl ToMsgPackValue for UnixFileMode {
     fn to_msgpack_value(self) -> rmpv::Value {
-        rmpv::Value::String(self.0.into())
+        rmpv::Value::Integer(self.0.mode().into())
     }
 
     fn field_type() -> crate::FieldType {

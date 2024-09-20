@@ -1,6 +1,6 @@
 [package]
 name = "flow-record"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "library to create records to be used by the rdump cli utility"
 repository = "https://github.com/janstarke/flow-record"
@@ -17,9 +17,9 @@ rmp-serde = "1.3.0"
 serde = {version="1.0", features = ["derive"]}
 chrono = {version="0.4", features=["serde"]}
 bodyfile = "0.1"
-flow-record-derive = "0.3.0"
-flow-record-common = "0.3.0"
-#flow-record-derive = {path="flow-record-derive"}
-#flow-record-common = {path="flow-record-common"}
+#flow-record-derive = "0.3.1"
+#flow-record-common = "0.3.1"
+flow-record-derive = {path="flow-record-derive"}
+flow-record-common = {path="flow-record-common"}
 binrw = "0.14"
 sha2 = "0.10.8"

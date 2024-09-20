@@ -42,7 +42,7 @@ pub fn expand_derive_serialize(ast: &mut syn::DeriveInput) -> syn::Result<TokenS
             }
             fn into_value(self) -> Value {
                 Value::Array(vec![
-                    #(#values),*
+                    #(#values),*,
                 ])
             }
         }

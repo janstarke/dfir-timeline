@@ -15,5 +15,11 @@ pub enum Error {
     Encode(#[from] rmpv::encode::Error),
 
     #[error(transparent)]
-    BinRW(#[from] binrw::Error)
+    BinRW(#[from] binrw::Error),
+
+    #[error(transparent)]
+    ModeParseError(#[from] file_mode::ModeParseError),
+
+    #[error(transparent)]
+    TryFromIntError(#[from] std::num::TryFromIntError),
 }
