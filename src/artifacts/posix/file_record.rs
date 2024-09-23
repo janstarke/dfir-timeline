@@ -1,15 +1,18 @@
 use crate::Record;
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, Utc};
-use flow_record_common::types::{Filesize, UnixFileMode};
+use flow_record_common::types::Filesize;
 use flow_record_derive::Record;
 
+use super::{FileMode, FileType};
+
 #[derive(Debug, Record)]
-pub struct PosixFileRecord {
+pub struct FileRecord {
     file_name: String,
     user_id: i64,
     group_id: i64,
-    mode: UnixFileMode,
+    file_type: FileType,
+    mode: FileMode,
     size: Filesize,
 
     modified: Option<DateTime<Utc>>,
@@ -36,7 +39,7 @@ impl From<UnixTimestamp> for Option<DateTime<Utc>> {
     }
 }
 
-impl TryFrom<&Bodyfile3Line> for PosixFileRecord {
+impl TryFrom<&Bodyfile3Line> for FileRecord {
     type Error = flow_record_common::Error;
     fn try_from(line: &Bodyfile3Line) -> Result<Self, Self::Error> {
         Ok(Self {
@@ -44,6 +47,7 @@ impl TryFrom<&Bodyfile3Line> for PosixFileRecord {
             user_id: i64::try_from(line.get_uid())?,
             group_id: i64::try_from(line.get_gid())?,
             mode: line.get_mode().try_into()?,
+            file_type: line.get_mode().try_into()?,
             size: line.get_size().into(),
             modified: UnixTimestamp::from(line.get_mtime()).into(),
             accessed: UnixTimestamp::from(line.get_atime()).into(),
