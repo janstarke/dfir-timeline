@@ -188,13 +188,13 @@ It is important to note that every field is encoded as a tuple where the first e
 |`dynamic`|
 |`datetime`| `DateTime<TZ: TimeZone>` | UNIX timestamp, encoding as integer in msgpack|
 |`filesize`|`flow-record-common::Filesize`|
-|`uint16`| `u8`, `u16`
+|`uint16`| `u8`, `u16`|
 |`uint32`| `u32`, `u64`|
 |`float`|`f32`, `f64`|
-|`string`|`String`
+|`string`|`String`|
 |`stringlist`|
 |`dictlist`|
-|`unix_file_mode`| `String` |
+|`unix_file_mode`| `String` | the `chmod` formatted string will be converted to u16 internally
 |`varint`| `i8`,`i16`, `i32`, `i64` |
 |`wstring`|
 |`net.ipv4.Address`|
