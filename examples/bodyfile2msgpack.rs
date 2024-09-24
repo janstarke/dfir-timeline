@@ -1,7 +1,7 @@
 use std::io::stdout;
 
 use bodyfile::Bodyfile3Line;
-use flow_record::{artifacts::posix::FileRecord, Serializer};
+use flow_record::{artifacts::posix::FileRecord, prelude::*};
 
 fn main() {
     let sample_line = "0|/Users/Administrator ($FILE_NAME)|93552-48-2|d/drwxr-xr-x|0|0|92|1577092511|1577092511|1577092511|-1";

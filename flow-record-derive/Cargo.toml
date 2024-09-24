@@ -1,6 +1,6 @@
 [package]
 name = "flow-record-derive"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 description = "library to create records to be used by the rdump cli utility"
 repository = "https://github.com/janstarke/flow-record"
@@ -12,11 +12,13 @@ proc-macro = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-syn = {version="2.0", features=["extra-traits", "derive"] }
+syn = {version="2.0", features=["extra-traits", "derive", "parsing"] }
 quote = "1.0"
 proc-macro2 = "1"
 serde = {version="1.0", features = ["derive"]}
 rmp = "0.8"
 rmp-serde = {version="1.1"}
-#flow-record-common = "0.3.1"
-flow-record-common = {path="../flow-record-common"}
+flow-record-common = "0.3.1"
+#flow-record-common = {path="../flow-record-common"}
+chrono = "0.4"
+darling = "0.20.10"

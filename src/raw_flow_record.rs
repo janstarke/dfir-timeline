@@ -3,9 +3,9 @@ use std::io::Cursor;
 use binrw::{helpers::count, BinRead, BinReaderExt, BinWrite};
 use rmpv::Value;
 
-pub struct FlowRecord(Value);
+pub struct RawFlowRecord(Value);
 
-impl BinWrite for FlowRecord {
+impl BinWrite for RawFlowRecord {
     type Args<'a> = ();
 
     fn write_options<W: std::io::Write + std::io::Seek>(
@@ -30,7 +30,7 @@ impl BinWrite for FlowRecord {
     }
 }
 
-impl BinRead for FlowRecord {
+impl BinRead for RawFlowRecord {
     type Args<'a> = ();
 
     fn read_options<R: std::io::Read + std::io::Seek>(
@@ -51,14 +51,14 @@ impl BinRead for FlowRecord {
     }
 }
 
-impl From<Value> for FlowRecord {
+impl From<Value> for RawFlowRecord {
     fn from(data: Value) -> Self {
         Self(data)
     }
 }
 
-impl From<FlowRecord> for Value {
-    fn from(value: FlowRecord) -> Self {
+impl From<RawFlowRecord> for Value {
+    fn from(value: RawFlowRecord) -> Self {
         value.0
     }
 }

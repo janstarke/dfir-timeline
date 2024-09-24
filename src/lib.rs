@@ -4,11 +4,11 @@
 //! ```rust
 //! use binrw::BinReaderExt;
 //! use chrono::prelude::*;
-//! use flow_record::{FlowRecord, RecordPack, Record, Serializer, RECORDSTREAM_MAGIC};
-//! use flow_record_derive::Record;
+//! use flow_record::prelude::*;
 //! use std::io::{Cursor,Seek,SeekFrom};
 //! 
-//! #[derive(Record)]
+//! #[derive(FlowRecord)]
+//! #[flow_record(version = 1, source = "Sample", classification = "file", skip_meta=true)]
 //! struct SampleStruct {
 //!     int_value: u32,
 //!     str_value: String,
@@ -33,10 +33,10 @@
 //! ```rust
 //!# use binrw::BinReaderExt;
 //!# use chrono::prelude::*;
-//!# use flow_record::{FlowRecord, RecordPack, Record, Serializer, RECORDSTREAM_MAGIC};
-//!# use flow_record_derive::Record;
+//!# use flow_record::prelude::*;
 //!# use std::io::{Cursor,Seek,SeekFrom};
-//!# #[derive(Record)]
+//!# #[derive(FlowRecord)]
+//!# #[flow_record(version = 1, source = "Sample", classification = "file", skip_meta=true)]
 //!# struct SampleStruct {
 //!#     int_value: u32,
 //!#     str_value: String,
@@ -53,8 +53,8 @@
 //! // omit the header
 //! raw_data.seek(SeekFrom::Start((4+2+RECORDSTREAM_MAGIC.len()).try_into().unwrap()));
 //!
-//! let descriptor_record: FlowRecord = raw_data.read_be().unwrap();
-//! let data_record: FlowRecord = raw_data.read_be().unwrap();
+//! let descriptor_record: RawFlowRecord = raw_data.read_be().unwrap();
+//! let data_record: RawFlowRecord = raw_data.read_be().unwrap();
 //!
 //! let descriptor = RecordPack::try_from(Value::from(descriptor_record)).unwrap();
 //! let data = RecordPack::try_from(Value::from(data_record)).unwrap()
@@ -76,14 +76,21 @@
 //!            ])
 //!        ]));
 //! ```
+
 pub mod artifacts;
-mod flow_record;
+
+mod raw_flow_record;
 mod record_pack_type;
 mod serializer;
 
-pub use record_pack_type::*;
-pub use serializer::DfirSerializer as Serializer;
-
-pub use flow_record::*;
-pub use flow_record_common::*;
-pub use serializer::RECORDSTREAM_MAGIC;
+pub mod prelude {
+    
+    pub use super::record_pack_type::*;
+    pub use super::serializer::DfirSerializer as Serializer;
+    
+    pub use super::raw_flow_record::*;
+    pub use flow_record_common::*;
+    pub use super::serializer::RECORDSTREAM_MAGIC;
+    pub use rmpv::Value;
+    pub use flow_record_derive::FlowRecord;
+}

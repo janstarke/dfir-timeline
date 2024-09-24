@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use rmpv::Value;
 
-use crate::{Error, ObjectType, Record};
+use crate::{Error, ObjectType, FlowRecord};
 
 pub struct RecordPack(Value);
 
@@ -10,13 +10,13 @@ impl RecordPack {
     pub fn with_descriptor(descriptor: Value) -> Self {
         Self(Value::Array(vec![
             ObjectType::RecordPackTypeDescriptor.into(),
-            descriptor
+            descriptor,
         ]))
     }
 
     pub fn with_record<R>(record: R) -> Self
     where
-        R: Record,
+        R: FlowRecord,
     {
         Self(Value::Array(vec![
             ObjectType::RecordPackTypeRecord.into(),

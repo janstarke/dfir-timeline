@@ -3,14 +3,16 @@ use quote::format_ident;
 use quote::quote;
 
 use crate::field_info::FieldInfo;
+use crate::record_attributes::RecordAttributes;
 
 pub struct StructInfo {
     name: String,
     fields: Vec<FieldInfo>,
+    attrs: RecordAttributes,
 }
 
 impl StructInfo {
-    pub fn new(name: String, s: &syn::DataStruct) -> Self {
+    pub fn new(name: String, s: &syn::DataStruct, attrs: RecordAttributes) -> Self {
         match &s.fields {
             syn::Fields::Named(n) => {
                 let fields: Vec<_> = n
@@ -25,26 +27,30 @@ impl StructInfo {
                         FieldInfo::new(f.ident.as_ref().unwrap().to_string(), field_type_expr)
                     })
                     .collect();
-                Self { name, fields }
+                Self {
+                    name,
+                    fields,
+                    attrs,
+                }
             }
             _ => Self {
                 name,
                 fields: vec![],
+                attrs,
             },
         }
     }
 
     pub fn descriptor(&self) -> TokenStream {
         let name = &self.name;
-        let fields = self.fields.iter()
-            .map(|field_info| {
-                let field_name = &field_info.name;
-                let field_type = &field_info.field_type_expr;
-                quote! {
-                    flow_record_common::RecordField::from(
-                        (#field_name.into(), (#field_type)))
-                }
-            });
+        let fields = self.fields.iter().map(|field_info| {
+            let field_name = &field_info.name;
+            let field_type = &field_info.field_type_expr;
+            quote! {
+                flow_record_common::RecordField::from(
+                    (#field_name.into(), (#field_type)))
+            }
+        });
         quote! {
             flow_record_common::RecordDescriptor::new(#name.into(), vec![#(#fields),*])
         }
@@ -78,14 +84,17 @@ impl StructInfo {
         &self,
         from_parameter_name: TokenStream,
     ) -> impl Iterator<Item = TokenStream> + '_ {
-        self.fields.iter().map(move |field_info| {
-            let field_name = format_ident!("{}", field_info.name);
-            quote! {
-                {
-                    use flow_record_common::ToMsgPackValue;
-                    #from_parameter_name.#field_name.to_msgpack_value()
+        self.fields
+            .iter()
+            .map(move |field_info| {
+                let field_name = format_ident!("{}", field_info.name);
+                quote! {
+                    {
+                        use flow_record_common::ToMsgPackValue;
+                        #from_parameter_name.#field_name.to_msgpack_value()
+                    }
                 }
-            }
-        })
+            })
+            .chain(self.attrs.values())
     }
 }

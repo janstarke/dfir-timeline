@@ -1,10 +1,10 @@
 use std::{collections::HashSet, io::Write};
 
 use binrw::{io::NoSeek, BinResult, BinWrite};
-use flow_record_common::{Error, RecordPack};
+use flow_record_common::{Error, FlowRecord, RecordPack};
 use rmpv::Value;
 
-use crate::{FlowRecord, Record};
+use crate::prelude::RawFlowRecord;
 
 pub const RECORDSTREAM_MAGIC: &[u8] = b"RECORDSTREAM\n";
 
@@ -38,7 +38,7 @@ where
 
     pub fn serialize<R>(&mut self, record: R) -> Result<(), Error>
     where
-        R: Record,
+        R: FlowRecord,
     {
         if !self.has_header_written {
             self.write_header()?;
@@ -58,7 +58,7 @@ where
 
     fn write_descriptor<R>(&mut self) -> Result<(), Error>
     where
-        R: Record,
+        R: FlowRecord,
     {
         self.write_flow_record(
             Value::try_from(RecordPack::with_descriptor(R::descriptor().clone()))?.into(),
@@ -73,7 +73,7 @@ where
         Ok(())
     }
 
-    fn write_flow_record(&mut self, fr: FlowRecord) -> BinResult<()> {
+    fn write_flow_record(&mut self, fr: RawFlowRecord) -> BinResult<()> {
         fr.write_be(&mut self.writer)
     }
 }

@@ -1,12 +1,12 @@
-use crate::Record;
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, Utc};
 use flow_record_common::types::Filesize;
-use flow_record_derive::Record;
+use flow_record_derive::FlowRecord;
 
 use super::{FileMode, FileType};
 
-#[derive(Debug, Record)]
+#[derive(Debug, FlowRecord)]
+#[flow_record(version = 1, source = "Posix", classification = "file")]
 pub struct FileRecord {
     file_name: String,
     user_id: i64,
