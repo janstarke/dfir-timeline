@@ -6,6 +6,7 @@
 //! use binrw::BinReaderExt;
 //! use chrono::prelude::*;
 //! use flow_record::prelude::*;
+//! use flow_record::derive::*;
 //! use std::io::{Cursor,Seek,SeekFrom};
 //! 
 //! #[derive(FlowRecord)]
@@ -36,6 +37,7 @@
 //!# use binrw::BinReaderExt;
 //!# use chrono::prelude::*;
 //!# use flow_record::prelude::*;
+//!# use flow_record::derive::FlowRecord;
 //!# use std::io::{Cursor,Seek,SeekFrom};
 //!# #[derive(FlowRecord)]
 //!# #[flow_record(version = 1, source = "Sample", classification = "file", skip_meta=true)]
@@ -88,13 +90,14 @@ mod record_pack_type;
 mod serializer;
 
 pub mod prelude {
-    
     pub use super::record_pack_type::*;
     pub use super::serializer::DfirSerializer as Serializer;
     
     pub use super::raw_flow_record::*;
     pub use flow_record_common::*;
     pub use super::serializer::RECORDSTREAM_MAGIC;
-    pub use rmpv::Value;
+}
+
+pub mod derive {
     pub use flow_record_derive::FlowRecord;
 }
