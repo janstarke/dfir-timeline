@@ -65,7 +65,7 @@
 //!
 //! assert_eq!(data,
 //!        Value::Array(vec![
-//!            Value::Integer(1.into()), // record pack type
+//!            1.into(), // record pack type
 //!            Value::Array(vec![
 //!                Value::Array(vec![    // reference to record descriptor
 //!                    "SampleStruct".into(),  // struct name
