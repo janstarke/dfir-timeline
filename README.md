@@ -145,9 +145,7 @@ It is important to note that every field is encoded as a tuple where the first e
 |`record`|
 |`net.ipaddress`|
 |`net.ipnetwork`|
-|`net.IPAddress`|
-|`net.IPNetwork`|
-|`path`|`PathBuf`|
+|`path`|`flow_record_common::types::Path`|
 
 ### Identifier
 
