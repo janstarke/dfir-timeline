@@ -16,10 +16,11 @@
 //!     dtm_value: DateTime<Utc>
 //! }
 //!
+//! let now = Utc::now();
 //! let sample_struct = SampleStruct {
 //!     int_value: 42,
 //!     str_value: "forty two".into(),
-//!     dtm_value: Utc.with_ymd_and_hms(2020, 1, 1, 0, 0, 0).unwrap(),
+//!     dtm_value: now,
 //! };
 //!
 //! let mut ser = Serializer::new(Vec::new());
@@ -43,10 +44,11 @@
 //!#     str_value: String,
 //!#     dtm_value: DateTime<Utc>
 //!# }
+//! let now = Utc::now();
 //!# let sample_struct = SampleStruct {
 //!#     int_value: 42,
 //!#     str_value: "forty two".into(),
-//!#     dtm_value: Utc.with_ymd_and_hms(2020, 1, 1, 0, 0, 0).unwrap(),
+//!#     dtm_value: now,
 //!# };
 //!# let mut ser = Serializer::new(Vec::new());
 //!# ser.serialize(sample_struct).unwrap();
@@ -66,13 +68,13 @@
 //!            Value::Integer(1.into()), // record pack type
 //!            Value::Array(vec![
 //!                Value::Array(vec![    // reference to record descriptor
-//!                    Value::String("SampleStruct".into()),  // struct name
-//!                    Value::Integer(114706890.into())       // struct hash
+//!                    "SampleStruct".into(),  // struct name
+//!                    114706890.into()        // struct hash
 //!                ]),
 //!                Value::Array(vec![   // actual data
-//!                    Value::Integer(42.into()),
-//!                    Value::String("forty two".into()),
-//!                    Value::Integer(1577836800.into())
+//!                    42.into(),
+//!                    "forty two".into(),
+//!                    now.timestamp().into()
 //!                ])
 //!            ])
 //!        ]));
