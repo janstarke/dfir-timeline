@@ -1,14 +1,14 @@
 use bodyfile::Bodyfile3Line;
 use chrono::{DateTime, Utc};
-use flow_record_common::types::Filesize;
+use flow_record_common::types::{Filesize, Path, PathType};
 use flow_record_derive::FlowRecord;
 
 use super::{FileMode, FileType};
 
-#[derive(Debug, FlowRecord)]
+#[derive(FlowRecord)]
 #[flow_record(version = 1, source = "Posix", classification = "file")]
 pub struct FileRecord {
-    file_name: String,
+    file_name: Path,
     user_id: i64,
     group_id: i64,
     file_type: FileType,
@@ -43,7 +43,7 @@ impl TryFrom<&Bodyfile3Line> for FileRecord {
     type Error = flow_record_common::Error;
     fn try_from(line: &Bodyfile3Line) -> Result<Self, Self::Error> {
         Ok(Self {
-            file_name: line.get_name().to_string(),
+            file_name: Path::new(line.get_name().to_string().into(), PathType::Posix),
             user_id: i64::try_from(line.get_uid())?,
             group_id: i64::try_from(line.get_gid())?,
             mode: line.get_mode().try_into()?,
