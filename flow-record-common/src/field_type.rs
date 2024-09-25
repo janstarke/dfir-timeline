@@ -1,15 +1,21 @@
-use std::fmt::Display;
-
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens, TokenStreamExt};
 use rmpv::Value;
+use strum::Display;
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Display)]
 #[allow(dead_code)]
+#[strum(serialize_all = "snake_case")]
 pub enum FieldType {
     Bool,
+
+    #[strum(to_string="uint16")]
     UInt16,
+
+    #[strum(to_string="uint32")]
+
     UInt32,
+    #[strum(to_string="varint")]
     VarInt,
     Float,
     String,
@@ -19,7 +25,7 @@ pub enum FieldType {
     Path,
     UnixFileMode
 }
-
+/*
 impl Display for FieldType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
@@ -41,6 +47,7 @@ impl Display for FieldType {
         )
     }
 }
+     */
 
 impl From<FieldType> for Value {
     fn from(value: FieldType) -> Self {
