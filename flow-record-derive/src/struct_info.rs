@@ -21,7 +21,7 @@ impl StructInfo {
                     .map(|f| {
                         let field_type = &f.ty;
                         let field_type_expr = quote! {
-                            <#field_type as flow_record_common::ToMsgPackValue>::field_type()
+                            <#field_type as flow_record::prelude::ToMsgPackValue>::field_type()
                         };
 
                         FieldInfo::new(f.ident.as_ref().unwrap().to_string(), field_type_expr)
@@ -47,12 +47,12 @@ impl StructInfo {
             let field_name = &field_info.name;
             let field_type = &field_info.field_type_expr;
             quote! {
-                flow_record_common::RecordField::from(
+                flow_record::prelude::RecordField::from(
                     (#field_name.into(), (#field_type)))
             }
         });
         quote! {
-            flow_record_common::RecordDescriptor::new(#name.into(), vec![#(#fields),*])
+            flow_record::prelude::RecordDescriptor::new(#name.into(), vec![#(#fields),*])
         }
     }
 
@@ -71,8 +71,8 @@ impl StructInfo {
 
         quote! { {
             use std::io::Write;
-            use sha2::{Digest, Sha256};
-            let mut #hasher = Sha256::new();
+            use flow_record::prelude::sha2::Digest;
+            let mut #hasher = flow_record::prelude::sha2::Sha256::new();
             #hasher.write_all(#name.as_bytes()).unwrap();
             #(#fields);*
             let hash = #hasher.finalize();
@@ -90,7 +90,7 @@ impl StructInfo {
                 let field_name = format_ident!("{}", field_info.name);
                 quote! {
                     {
-                        use flow_record_common::ToMsgPackValue;
+                        use flow_record::ToMsgPackValue;
                         #from_parameter_name.#field_name.to_msgpack_value()
                     }
                 }

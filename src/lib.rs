@@ -89,6 +89,8 @@ mod raw_flow_record;
 mod record_pack_type;
 mod serializer;
 
+pub use flow_record_common::ToMsgPackValue;
+
 pub mod prelude {
     pub use super::record_pack_type::*;
     pub use super::serializer::DfirSerializer as Serializer;
@@ -96,8 +98,12 @@ pub mod prelude {
     pub use super::raw_flow_record::*;
     pub use flow_record_common::*;
     pub use super::serializer::RECORDSTREAM_MAGIC;
+
+    pub use sha2;
+    pub use ::rmpv;
 }
 
 pub mod derive {
+    extern crate flow_record_derive;
     pub use flow_record_derive::FlowRecord;
 }

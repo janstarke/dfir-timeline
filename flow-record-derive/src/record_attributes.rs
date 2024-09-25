@@ -19,10 +19,10 @@ impl RecordAttributes {
             Vec::new()
         } else {
             vec![
-                quote! {rmpv::Value::from(#source)},
-                quote! {rmpv::Value::from(#classification)},
-                quote! {rmpv::Value::from(chrono::Utc::now().timestamp())},
-                quote! {rmpv::Value::from(#version)},
+                quote! {flow_record::prelude::rmpv::Value::from(#source)},
+                quote! {flow_record::prelude::rmpv::Value::from(#classification)},
+                quote! {flow_record::prelude::rmpv::Value::from(chrono::Utc::now().timestamp())},
+                quote! {flow_record::prelude::rmpv::Value::from(#version)},
             ]
         };
         values.into_iter()

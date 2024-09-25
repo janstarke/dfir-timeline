@@ -34,6 +34,6 @@ impl From<FieldType> for Value {
 
 impl ToTokens for FieldType {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        tokens.append_all(quote! {flow_record_common::#self});
+        tokens.append_all(quote! {flow_record::prelude::#self});
     }
 }

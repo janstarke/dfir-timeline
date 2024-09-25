@@ -17,5 +17,4 @@ rmpv.workspace = true
 thiserror = "1.0.63"
 binrw = "0.14"
 chrono.workspace = true
-sha2 = "0.10.8"
 strum = { version = "0.26.3", features = ["derive"] }

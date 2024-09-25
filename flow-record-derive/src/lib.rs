@@ -42,9 +42,9 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
     }
 
     let gen = quote!(
-        use rmpv::Value;
+        use flow_record::prelude::rmpv::Value;
 
-        impl flow_record_common::FlowRecord for #name {
+        impl FlowRecord for #name {
             fn name() -> &'static str {
                 #name_as_string
             }
