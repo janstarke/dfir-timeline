@@ -52,7 +52,7 @@ impl ToMsgPackValue for &str {
 
 impl ToMsgPackValue for Vec<u8> {
     fn to_msgpack_value(self) -> rmpv::Value {
-        rmpv::Value::Binary(self.into())
+        rmpv::Value::Binary(self)
     }
 
     fn field_type() -> FieldType {
