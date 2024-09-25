@@ -1,11 +1,13 @@
 [package]
 name = "flow-record-derive"
-version = "0.4.0"
-edition = "2021"
-description = "library to create records to be used by the rdump cli utility"
-repository = "https://github.com/janstarke/flow-record"
-authors = ["Jan Starke <jan.starke@posteo.de>"]
-license = "GPL-3.0"
+description = "derive crate for flow-record"
+repository.workspace = true
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+edition.workspace = true
+documentation.workspace = true
 
 [lib]
 proc-macro = true
@@ -15,10 +17,6 @@ proc-macro = true
 syn = {version="2.0", features=["extra-traits", "derive", "parsing"] }
 quote = "1.0"
 proc-macro2 = "1"
-serde = {version="1.0", features = ["derive"]}
-rmp = "0.8"
-rmp-serde = {version="1.1"}
-flow-record-common = "0.4.0"
-#flow-record-common = {path="../flow-record-common"}
-chrono = "0.4"
+flow-record-common.workspace = true
+chrono.workspace = true
 darling = "0.20.10"

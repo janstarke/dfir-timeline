@@ -1,4 +1,5 @@
-//!
+#![doc = include_str!("../README.md")]
+
 //! # Usage
 //!
 //! ```rust
@@ -76,6 +77,7 @@
 //!            ])
 //!        ]));
 //! ```
+//! 
 
 pub mod artifacts;
 

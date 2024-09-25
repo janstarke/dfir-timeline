@@ -7,68 +7,6 @@
 # flow-record
 Library for the creation of DFIR timelines, to be used by [`rdump`](https://docs.dissect.tools/en/latest/tools/rdump.html)
 
-
-
-## Usage
-
-```rust
-use binrw::BinReaderExt;
-use chrono::prelude::*;
-use flow_record::{FlowRecord, RecordPack, Record, Serializer, RECORDSTREAM_MAGIC};
-use flow_record_derive::Record;
-use std::io::{Cursor,Seek,SeekFrom};
-
-#[derive(Record)]
-struct SampleStruct {
-    int_value: u32,
-    str_value: String,
-    dtm_value: DateTime<Utc>
-}
-
-let sample_struct = SampleStruct {
-    int_value: 42,
-    str_value: "forty two".into(),
-    dtm_value: Utc.with_ymd_and_hms(2020, 1, 1, 0, 0, 0).unwrap(),
-};
-
-let mut ser = Serializer::new(Vec::new());
-ser.serialize(sample_struct).unwrap();
-
-```
-
-That's basically all. The next steps are only necessary to validate
-if all data were written correctly. You can ignore this, if you just want
-to export the binary data.
-
-```rust
-// omit the header
-raw_data.seek(SeekFrom::Start((4+2+RECORDSTREAM_MAGIC.len()).try_into().unwrap()));
-
-let descriptor_record: FlowRecord = raw_data.read_be().unwrap();
-let data_record: FlowRecord = raw_data.read_be().unwrap();
-
-let descriptor = RecordPack::try_from(Value::from(descriptor_record)).unwrap();
-let data = RecordPack::try_from(Value::from(data_record)).unwrap()
-                .inner().clone();
-
-assert_eq!(data,
-       Value::Array(vec![
-           Value::Integer(1.into()), // record pack type
-           Value::Array(vec![
-               Value::Array(vec![    // reference to record descriptor
-                   Value::String("SampleStruct".into()),  // struct name
-                   Value::Integer(114706890.into())       // struct hash
-               ]),
-               Value::Array(vec![   // actual data
-                   Value::Integer(42.into()),
-                   Value::String("forty two".into()),
-                   Value::Integer(1577836800.into())
-               ])
-           ])
-       ]));
-```
-
-
 # Record flow format
 
 Basically, the [record format](https://github.com/fox-it/flow.record) uses [MsgPack](https://github.com/msgpack/msgpack). A record stream is a sequence of tuples, each containing of a 4 byte size field and a msgpack encoded [record pack](#record-packs) (see below).
@@ -105,7 +43,7 @@ In the following description I omit the fact that every distinct record and ever
 
 All data in the record format are specified as a *record pack*, which is simply a tuple (a *fixarray* of length 2) consisting of an record pack type and the record pack data.
 
-```
+```text
    ┌──────────────────────────── msgpack type ext8/ext16/ext32
    │    ┌─────────────────────── length of content            
    │    │    ┌────────────────── type id must be 0x0e         
@@ -225,7 +163,7 @@ Every remaining record can refer to a record descriptor using the name and hash 
 
 A record contains a reference to the record descriptor and a list of values, in the order of fields like specified in the descriptor.
 
-```
+```text
         ┌───────────────────────────────────────────────────────────── record pack type 1           
         │                     ┌─────────────────────────────────────── name of the descriptor       
         │                     │                   ┌─────────────────── hash of the descriptor       
