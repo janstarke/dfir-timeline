@@ -23,7 +23,8 @@ pub enum FieldType {
     Datetime,
     Filesize,
     Path,
-    UnixFileMode
+    UnixFileMode,
+    Record
 }
 
 impl From<FieldType> for Value {
