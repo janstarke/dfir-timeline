@@ -41,10 +41,12 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
         syn::Data::Union(_) => panic!("no support for unions yet"),
     }
 
+    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
+
     let gen = quote!(
         use flow_record::prelude::rmpv::Value;
 
-        impl FlowRecord for #name {
+        impl #impl_generics FlowRecord for #name #ty_generics #where_clause {
             fn name() -> &'static str {
                 #name_as_string
             }
