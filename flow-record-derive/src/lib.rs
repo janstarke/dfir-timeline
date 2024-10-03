@@ -8,6 +8,7 @@ use syn::{parse_macro_input, DeriveInput};
 mod field_info;
 mod record_attributes;
 mod struct_info;
+mod without_lifetimes;
 
 #[proc_macro_derive(FlowRecord, attributes(flow_record))]
 pub fn derive_flow_record(input: TokenStream) -> TokenStream {
@@ -31,7 +32,7 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
 
     match &ast.data {
         syn::Data::Struct(s) => {
-            let struct_info = StructInfo::new(name_as_string.clone(), s, attrs);
+            let struct_info = StructInfo::new(name_as_string.clone(), s.clone(), attrs);
             descriptor = struct_info.descriptor();
             hash = struct_info.descriptor_hash();
             values = struct_info.values(quote! {#from_parameter_name}).collect();

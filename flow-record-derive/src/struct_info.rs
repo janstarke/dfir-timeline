@@ -4,6 +4,7 @@ use quote::quote;
 
 use crate::field_info::FieldInfo;
 use crate::record_attributes::RecordAttributes;
+use crate::without_lifetimes::WithoutLifetimes;
 
 pub struct StructInfo {
     name: String,
@@ -12,16 +13,17 @@ pub struct StructInfo {
 }
 
 impl StructInfo {
-    pub fn new(name: String, s: &syn::DataStruct, attrs: RecordAttributes) -> Self {
-        match &s.fields {
+    pub fn new(name: String, s: syn::DataStruct, attrs: RecordAttributes) -> Self {
+        match s.fields {
             syn::Fields::Named(n) => {
                 let fields: Vec<_> = n
                     .named
                     .iter()
                     .map(|f| {
-                        let field_type = &f.ty;
+                        let field_type = f.ty.clone().without_lifetimes();
+
                         let field_type_expr = quote! {
-                            <#field_type as flow_record::prelude::ToMsgPackValue>::field_type()
+                            <#field_type as ::flow_record::prelude::ToMsgPackValue>::field_type()
                         };
 
                         FieldInfo::new(f.ident.as_ref().unwrap().to_string(), field_type_expr)
