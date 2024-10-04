@@ -1,44 +1,65 @@
+use std::collections::HashSet;
+
 use proc_macro2::TokenStream;
 use quote::format_ident;
 use quote::quote;
+use syn::Type;
 
 use crate::field_info::FieldInfo;
 use crate::record_attributes::RecordAttributes;
 use crate::without_lifetimes::WithoutLifetimes;
 
+pub struct DescriptorCode {
+    pub hash: TokenStream,
+    pub descriptor: TokenStream,
+}
+
 pub struct StructInfo {
     name: String,
     fields: Vec<FieldInfo>,
     attrs: RecordAttributes,
+
+    children_types: HashSet<Type>,
 }
 
 impl StructInfo {
     pub fn new(name: String, s: syn::DataStruct, attrs: RecordAttributes) -> Self {
         match s.fields {
             syn::Fields::Named(n) => {
-                let fields: Vec<_> = n
-                    .named
-                    .iter()
-                    .map(|f| {
-                        let field_type = f.ty.clone().without_lifetimes();
+                let mut fields = Vec::new();
+                let mut children_types = HashSet::new();
 
-                        let field_type_expr = quote! {
-                            <#field_type as ::flow_record::prelude::ToMsgPackValue>::field_type()
-                        };
+                for field in n.named.iter() {
+                    let field_type = field.ty.clone().without_lifetimes();
+                    let field_type_expr = quote! {
+                        <#field_type as ::flow_record::prelude::ToMsgPackValue>::field_type()
+                    };
+                    fields.push(FieldInfo::new(
+                        field.ident.as_ref().unwrap().to_string(),
+                        field_type_expr,
+                    ));
 
-                        FieldInfo::new(f.ident.as_ref().unwrap().to_string(), field_type_expr)
-                    })
-                    .collect();
+                    if field
+                        .attrs
+                        .iter()
+                        .any(|attr| attr.path().is_ident("has_descriptor"))
+                    {
+                        children_types.insert(field_type.clone());
+                    }
+                }
+
                 Self {
                     name,
                     fields,
                     attrs,
+                    children_types,
                 }
             }
             _ => Self {
                 name,
                 fields: vec![],
                 attrs,
+                children_types: HashSet::new(),
             },
         }
     }
@@ -56,6 +77,19 @@ impl StructInfo {
         quote! {
             flow_record::prelude::RecordDescriptor::new(#name.into(), vec![#(#fields),*])
         }
+    }
+
+    pub fn child_descriptors(&self) -> Vec<DescriptorCode> {
+        self.children_types.iter().map(|ty| {
+            let ty = ty.clone();
+            let hash = quote! {
+                <#ty as ::flow_record::prelude::ToMsgPackValue>::descriptor_hash()
+            };
+            let descriptor = quote! {
+                <#ty as ::flow_record::prelude::ToMsgPackValue>::descriptor()
+            };
+            DescriptorCode { hash, descriptor }
+        }).collect()
     }
 
     pub fn descriptor_hash(&self) -> TokenStream {

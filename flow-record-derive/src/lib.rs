@@ -25,6 +25,7 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
     let name_as_string = name.to_string();
 
     let descriptor;
+    let child_descriptors;
     let hash;
     let values: Vec<_>;
 
@@ -34,6 +35,7 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
         syn::Data::Struct(s) => {
             let struct_info = StructInfo::new(name_as_string.clone(), s.clone(), attrs);
             descriptor = struct_info.descriptor();
+            child_descriptors = struct_info.child_descriptors();
             hash = struct_info.descriptor_hash();
             values = struct_info.values(quote! {#from_parameter_name}).collect();
         }
@@ -41,6 +43,11 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
         syn::Data::Enum(_) => panic!("no support for enums yet"),
         syn::Data::Union(_) => panic!("no support for unions yet"),
     }
+
+    let children = child_descriptors.into_iter().map(|c| {
+        let (hash, descriptor) = (c.hash, c.descriptor);
+        quote! {#hash, #descriptor}
+    });
 
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
@@ -52,7 +59,7 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
                 #name_as_string
             }
             fn descriptor() -> &'static Value {
-                static D: std::sync::LazyLock<Value> = std::sync::LazyLock::new(|| Value::from(#descriptor));
+                static D: std::sync::LazyLock<Value> = std::sync::LazyLock::new(|| Value::from( #descriptor ) );
                 &*D
             }
             fn descriptor_hash() -> u32 {
@@ -64,7 +71,22 @@ fn expand(ast: &mut syn::DeriveInput, attrs: RecordAttributes) -> darling::Resul
                     #(#values),*,
                 ])
             }
+            fn child_descriptors() -> &'static ::std::collections::HashMap<u32, Value> {
+                static D: std::sync::LazyLock<::std::collections::HashMap<u32, Value>> = std::sync::LazyLock::new(||
+                    {
+                        let mut d = ::std::collections::HashMap::new();
+                        #( d.insert( #children ); )*
+                        d
+                    }
+                );
+                &*D
+            }
         }
     );
     Ok(gen.into())
+}
+
+#[proc_macro_attribute]
+pub fn has_descriptor(_input: TokenStream, annotated_item: TokenStream) -> TokenStream {
+    annotated_item
 }

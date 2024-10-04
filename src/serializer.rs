@@ -64,6 +64,15 @@ where
             Value::try_from(RecordPack::with_descriptor(R::descriptor().clone()))?.into(),
         )?;
         self.written_descriptor_hashes.insert(R::descriptor_hash());
+
+        for (hash, descriptor) in R::child_descriptors() {
+            if !self.written_descriptor_hashes.contains(hash) {
+                self.write_flow_record(
+                    Value::try_from(RecordPack::with_descriptor(descriptor.clone()))?.into(),
+                )?;
+                self.written_descriptor_hashes.insert(*hash);
+            }
+        }
         Ok(())
     }
 
