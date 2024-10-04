@@ -13,7 +13,7 @@ impl ToMsgPackValue for bool {
     }
 
     fn field_type() -> FieldType {
-        FieldType::Bool
+        FieldType::Boolean
     }
 }
 

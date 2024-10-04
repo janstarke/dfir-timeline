@@ -2,7 +2,7 @@
 members=["flow-record-common", "flow-record-derive" ]
 
 [workspace.package]
-version = "0.4.8"
+version = "0.4.9"
 authors = ["Jan Starke <jan.starke@posteo.de>"]
 license = "GPL-3.0"
 readme = "README.md"
@@ -11,8 +11,8 @@ documentation = "https://docs.rs/flow-record"
 repository = "https://github.com/janstarke/flow-record"
 
 [workspace.dependencies]
-flow-record-derive = "0.4.8"
-flow-record-common = "0.4.8"
+flow-record-derive = "0.4.9"
+flow-record-common = "0.4.9"
 #flow-record-derive = { path = "flow-record-derive" }
 #flow-record-common = { path = "flow-record-common" }
 rmpv = "1.3.0"

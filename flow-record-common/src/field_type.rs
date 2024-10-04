@@ -7,7 +7,7 @@ use strum::Display;
 #[allow(dead_code)]
 #[strum(serialize_all = "snake_case")]
 pub enum FieldType {
-    Bool,
+    Boolean,
 
     #[strum(to_string="uint16")]
     UInt16,
