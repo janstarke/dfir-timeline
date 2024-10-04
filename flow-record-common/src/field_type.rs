@@ -24,7 +24,10 @@ pub enum FieldType {
     Filesize,
     Path,
     UnixFileMode,
-    Record
+    Record,
+    StringList,
+    DictList,
+    Dynamic
 }
 
 impl From<FieldType> for Value {
