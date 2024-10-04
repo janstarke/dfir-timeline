@@ -1,6 +1,5 @@
 use syn::{
-    punctuated::Punctuated, AngleBracketedGenericArguments, GenericArgument, Path, PathArguments,
-    PathSegment, Token, Type, TypePath,
+    punctuated::Punctuated, spanned::Spanned, AngleBracketedGenericArguments, GenericArgument, Path, PathArguments, PathSegment, Token, Type, TypePath, TypeReference
 };
 
 pub trait WithoutLifetimes {
@@ -11,6 +10,14 @@ impl WithoutLifetimes for Type {
     fn without_lifetimes(&self) -> Self {
         match self {
             Type::Path(type_path) => Type::Path(type_path.without_lifetimes()),
+            Type::Reference(ty_ref) => Type::Reference(
+                TypeReference {
+                    and_token: Token![&](ty_ref.span()),
+                    lifetime: None,
+                    mutability: ty_ref.mutability,
+                    elem: Box::new(ty_ref.elem.without_lifetimes()),
+                }
+            ),
             _ => unimplemented!("no support for this type yet: '{:?}'", self),
         }
     }

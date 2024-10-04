@@ -25,7 +25,11 @@ pub enum FieldType {
     Path,
     UnixFileMode,
     Record,
+    
+    #[strum(to_string="sringlist")]
     StringList,
+
+    #[strum(to_string="dictlist")]
     DictList,
     Dynamic
 }
