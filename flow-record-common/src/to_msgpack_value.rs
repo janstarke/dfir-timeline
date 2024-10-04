@@ -7,6 +7,16 @@ pub trait ToMsgPackValue {
     fn field_type() -> FieldType;
 }
 
+impl ToMsgPackValue for bool {
+    fn to_msgpack_value(self) -> rmpv::Value {
+        rmpv::Value::Boolean(self)
+    }
+
+    fn field_type() -> FieldType {
+        FieldType::Bool
+    }
+}
+
 impl<T> ToMsgPackValue for Option<T> where T: ToMsgPackValue {
     fn to_msgpack_value(self) -> rmpv::Value {
         match self {
