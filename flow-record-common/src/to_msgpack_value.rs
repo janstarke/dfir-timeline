@@ -30,6 +30,16 @@ impl<Tz> ToMsgPackValue for DateTime<Tz> where Tz: TimeZone {
     }
 }
 
+impl<Tz> ToMsgPackValue for &DateTime<Tz> where Tz: TimeZone {
+    fn to_msgpack_value(self) -> rmpv::Value {
+        self.timestamp().into()
+    }
+    
+    fn field_type() -> FieldType {
+        FieldType::Datetime
+    }
+}
+
 impl ToMsgPackValue for String {
     fn to_msgpack_value(self) -> rmpv::Value {
         rmpv::Value::String(self.into())
@@ -91,6 +101,7 @@ to_msgpack_value_for_integer!(u8, FieldType::UInt16);
 to_msgpack_value_for_integer!(u16, FieldType::UInt16);
 to_msgpack_value_for_integer!(u32, FieldType::UInt32);
 to_msgpack_value_for_integer!(u64, FieldType::VarInt);
+to_msgpack_value_for_integer!(usize, FieldType::VarInt);
 
 to_msgpack_value_for_integer!(i8, FieldType::VarInt);
 to_msgpack_value_for_integer!(i16, FieldType::VarInt);
